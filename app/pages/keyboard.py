@@ -1,5 +1,7 @@
 from PySide6.QtWidgets import QGridLayout, QWidget, QPushButton, QLabel
 from PySide6.QtCore import Qt
+from ..widgets.keyboard_widget import KeyboardWidget
+
 
 class Keyboard(QWidget):
     def __init__(self, parent):
@@ -7,18 +9,11 @@ class Keyboard(QWidget):
 
         # Instanciation du layout
         self.layout = QGridLayout(self)
-
-        # Instanciation des boutons
-        self.homeButton = QPushButton("menu") # A changer pour une icone
         
-        self._test = QLabel("Clavier")
-        self._test.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        # Connection des events
-        self.homeButton.clicked.connect(lambda _event: self.switch(parent))
-
-        self.layout.addWidget(self._test, 0, 0)
-        self.layout.addWidget(self.homeButton, 1, 0)
+        # Instanciation du widget clavier
+        self.keyboard = KeyboardWidget(parent)
+        
+        self.layout.addWidget(self.keyboard, 0, 0)
 
     def switch(self, parent):
         from .menu import Menu
