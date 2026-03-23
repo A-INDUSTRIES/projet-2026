@@ -16,18 +16,21 @@ class Menu(QWidget):
         self.messagesButton = QPushButton("Messages")
         self.contactsButton = QPushButton("Contacts")
         self.settingsButton = QPushButton("Paramètres")
+        self.exitButton     = QPushButton("Quitter l'application")
 
         # Connection des events
         self.keyboardButton.clicked.connect(lambda _event: self._switch(parent, Keyboard(parent)))
         self.messagesButton.clicked.connect(lambda _event: self._switch(parent, Messages(parent)))
         self.contactsButton.clicked.connect(lambda _event: self._switch(parent, Contacts(parent)))
         self.settingsButton.clicked.connect(lambda _event: self._switch(parent, Settings(parent)))
+        self.exitButton.clicked.connect(lambda _event: exit())
 
         # Ajout des boutons dans le layout
         self.layout.addWidget(self.keyboardButton)
         self.layout.addWidget(self.messagesButton)
         self.layout.addWidget(self.contactsButton)
         self.layout.addWidget(self.settingsButton)
+        self.layout.addWidget(self.exitButton)
 
     def _switch(self, parent, page):
         parent.inner = page
