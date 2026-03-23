@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QMainWindow, QApplication
+from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import Qt
-from pages.menu import Menu
+from app.pages.menu import Menu
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -31,8 +31,3 @@ class MainWindow(QMainWindow):
     def inner(self, inner):
         self._inner = inner
         self.setCentralWidget(self._inner)
-
-if __name__ == "__main__":
-    app = QApplication()
-    main_window = MainWindow()
-    app.exec()
