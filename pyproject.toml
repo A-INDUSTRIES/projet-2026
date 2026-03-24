@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "kokoro>=0.9.4",
     "numpy>=2.4.3",
     "piper-tts>=1.4.1",
     "pyinstaller>=6.19.0",
