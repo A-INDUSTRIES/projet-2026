@@ -1,10 +1,23 @@
 import sounddevice as sd
-import json
+import requests
+from zipfile import ZipFile
+from io import BytesIO
 from kokoro import KPipeline, KModel
 from pathlib import Path
 from threading import Thread
 
 MODEL_PATH = Path(__file__).parent / "voice_model"
+MODEL_URL = "https://cloud.aindustries.be/public.php/dav/files/Paik9imyoMJjsLK/?accept=zip"
+
+# Si le modèle n'a pas été téléchargé
+# Sert durant le dev: pour la release on installera ces fichiers durant l'installation
+if not MODEL_PATH.exists():
+    print("Téléchargement du modèle pour la voix en cours.")
+    response = requests.get(MODEL_URL)
+
+    with ZipFile(BytesIO(response.content)) as zip:
+        zip.extractall(MODEL_PATH.parent)
+
 
 model = KModel(repo_id="hexgrad/Kokoro-82M", 
                model=MODEL_PATH / "kokoro-v1_0.pth",
