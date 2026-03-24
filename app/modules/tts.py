@@ -3,6 +3,7 @@ from piper.voice import PiperVoice
 from piper.config import SynthesisConfig
 from pathlib import Path
 from threading import Thread
+from .settings import SettingsManager
 
 MODEL_PATH = Path(__file__).parent / "fr_FR-upmc-medium.onnx" 
 
@@ -16,7 +17,7 @@ class VoiceEngine():
 
     def _thread(self, text):
         # Paramètre de l'application
-        config = SynthesisConfig(1) # 0 = Caro | 1 = Mohammed
+        config = SynthesisConfig(SettingsManager().getSetting("voice")) # 0 = Caro | 1 = Mohammed
         for chunk in self.voice.synthesize(text, config):
             sd.play(chunk.audio_int16_array, samplerate=self.voice.config.sample_rate)
             sd.wait()
