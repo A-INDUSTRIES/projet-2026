@@ -8,3 +8,5 @@ wheels/
 
 # Virtual environments
 .venv
+app/modules/voice_model/*
+app/modules/voice_model
