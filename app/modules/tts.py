@@ -9,6 +9,7 @@ from queue import Queue
 MODEL_PATH = Path(__file__).parent / "voice_model"
 MODEL_URL = "https://cloud.aindustries.be/public.php/dav/files/Paik9imyoMJjsLK/?accept=zip"
 
+# https://stackoverflow.com/questions/6760685/what-is-the-best-way-of-implementing-a-singleton-in-python
 class Singleton(type):
     _instances = {}
     def __call__(cls, *args, **kwargs):
@@ -21,7 +22,6 @@ class VoiceEngine(metaclass=Singleton):
         self.queue = Queue()
         self.thread = Thread(target=self._thread)
         self.thread.start()
-        self.instance = self
 
     def stop(self):
         self.queue.put(None)
