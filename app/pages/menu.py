@@ -23,7 +23,7 @@ class Menu(QWidget):
         self.messagesButton.clicked.connect(lambda _event: self._switch(parent, Messages(parent)))
         self.contactsButton.clicked.connect(lambda _event: self._switch(parent, Contacts(parent)))
         self.settingsButton.clicked.connect(lambda _event: self._switch(parent, Settings(parent)))
-        self.exitButton.clicked.connect(lambda _event: exit())
+        self.exitButton.clicked.connect(lambda _event: parent.close())
 
         # Ajout des boutons dans le layout
         self.layout.addWidget(self.keyboardButton)

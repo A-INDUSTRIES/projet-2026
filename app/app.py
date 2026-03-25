@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import Qt
 from app.pages.menu import Menu
+from app.modules.tts import VoiceEngine
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -31,3 +32,11 @@ class MainWindow(QMainWindow):
     def inner(self, inner):
         self._inner = inner
         self.setCentralWidget(self._inner)
+
+    def showEvent(self, event):
+        VoiceEngine()
+        return super().showEvent(event)
+
+    def closeEvent(self, event):
+        VoiceEngine().stop()
+        return super().closeEvent(event)
