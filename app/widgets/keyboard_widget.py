@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout, QLabel, QSizePo
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon
 from ..modules.tts import VoiceEngine
+from .button import Button
 from pathlib import Path
 
 class KeyboardWidget(QWidget):    
@@ -18,6 +19,9 @@ class KeyboardWidget(QWidget):
         self.cpslock = False
         self.shift = False
         
+        # Gestion du toggle du clavier de caractères spéciaux
+        self.specialCharactersToggled = False
+        
         # Récupération des icones à display sur le bouton shift        
         imgPath = (Path(__file__).parent.parent / "assets" / "shift_off.png").as_posix()    
         self.shiftOFF = QIcon(imgPath)
@@ -25,87 +29,81 @@ class KeyboardWidget(QWidget):
         self.shiftON = QIcon(imgPath)
                 
         # Grandes lignes principales du clavier : 10 x 4
-        self.first_line = list("1234567890")
-        self.second_line = list("azertyuiop")
-        self.third_line = list("qsdfghjklm")
-        self.fourth_line = list("wxcvbn,.:=")
-        self.lines = [self.first_line, self.second_line, self.third_line, self.fourth_line]
+        self.firstLine = list("1234567890")
+        self.secondLine = list("azertyuiop")
+        self.thirdLine = list("qsdfghjklm")
+        self.fourthLine = list("wxcvbn,.:'")
+        self.lines = [self.firstLine, self.secondLine, self.thirdLine, self.fourthLine]
         self.keyboardButtons = [] # Pour garder chaque bouton accessible pour la modification (shift, capslock...)
         
         for n in range(len(self.lines)):
-            for i in range(len(self.lines[n])):
-                self.lowerLetter = QPushButton(self.lines[n][i])
-                self.lowerLetter.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+            for i in range(len(self.lines[n])):              
+                self.lowerLetter = Button(self.lines[n][i])
                 self.layout.addWidget(self.lowerLetter, n+1, 3+2*i, 1, 2)
                 self.lowerLetter.clicked.connect(lambda _event, char=self.lines[n][i]: self.handleCharacterButton(char))
                 self.keyboardButtons.append(self.lowerLetter)
+        
+        # Lignes de caractères spéciaux
+        self.secondSpecial = list("@#€_&-+()/")
+        self.thirdSpecial = list('*";!?=~£¥$')
+        self.fourthSpecial = list("^°{") + list("}[]\\%<>")
+        self.specialLines = self.secondSpecial + self.thirdSpecial + self.fourthSpecial
 
         # Boutons spéciaux
         # Retour au menu
-        self.homeButton = QPushButton("menu") # A changer pour une icone
-        self.homeButton.clicked.connect(lambda _event: self.switch(parent))
+        self.homeButton = Button("menu") # A changer pour une icone
         self.homeButton.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.layout.addWidget(self.homeButton, 5, 3, 1, 4)
         
         # Text-to-Speech
         # NE RESTERA PAS DANS LE CLAVIER, FONCTIONNALITE TEST
-        self.tts = QPushButton("Text-to\nSpeech")
-        self.tts.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.tts = Button("Text-to\nSpeech")
         self.layout.addWidget(self.tts, 0, 22, 1, 3)
         self.tts.clicked.connect(lambda _event: self.handleTextToSpeech())
         
         # Espace
-        self.space = QPushButton(" ")
-        self.space.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.space = Button(" ")
         self.space.clicked.connect(lambda _event, char=" ": self.handleCharacterButton(char))
         self.layout.addWidget(self.space, 5, 7, 1, 10)
         
         # Back Space
-        self.backSpace = QPushButton("Back\nSpace")
-        self.backSpace.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.backSpace = Button("Back\nSpace")
         self.backSpace.clicked.connect(lambda _event: self.handleBackSpace())
         self.layout.addWidget(self.backSpace, 1, 23, 1, 2)
         
         # Bouton effacer tout le texte
-        self.eraseText = QPushButton("Effacer\ntout le\ntexte")
-        self.eraseText.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.eraseText = Button("Effacer\ntout le\ntexte")
         self.eraseText.clicked.connect(lambda _event: self.handleTextErasion())
         self.layout.addWidget(self.eraseText, 2, 23, 1, 2)
         
         # Flèche gauche
-        self.leftArrow = QPushButton("<")
-        self.leftArrow.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.leftArrow = Button("<")
         self.leftArrow.clicked.connect(lambda _event: self.handleLeftArrow())
         self.layout.addWidget(self.leftArrow, 5, 17, 1, 3)
         
         # Flèche droite
-        self.rightArrow = QPushButton(">")
-        self.rightArrow.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.rightArrow = Button(">")
         self.rightArrow.clicked.connect(lambda _event: self.handleRightArrow())
         self.layout.addWidget(self.rightArrow, 5, 20, 1, 3)
         
         # Shift
-        self.shiftKey = QPushButton(self.shiftOFF ,"Shift")
+        self.shiftKey = Button(self.shiftOFF, "Shift")
         self.shiftKey.setIconSize(QSize(48, 48))
-        self.shiftKey.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.shiftKey.clicked.connect(lambda _event: self.handleShift())
         self.layout.addWidget(self.shiftKey, 4, 0, 1, 2)
         
         # Caps Lock
-        self.capsLock = QPushButton("verr\nmaj\noff")
-        self.capsLock.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.capsLock = Button("verr\nmaj\noff")
         self.capsLock.clicked.connect(lambda _event: self.handleCapsLock())
         self.layout.addWidget(self.capsLock, 3, 0, 1, 2)
         
         # Bouton caractères spéciaux
-        self.special = QPushButton("?!&")
-        self.special.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.special = Button("?!&")
         self.special.clicked.connect(lambda _event: self.toggleSpecialCharacters())
         self.layout.addWidget(self.special, 5, 0, 1, 2)
         
         # Bouton Gaze Typing ON / OFF
-        self.gazeTyping = QPushButton(" Gaze\nTyping\nON/OFF")
-        self.gazeTyping.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.gazeTyping = Button(" Gaze\nTyping\nON/OFF")
         self.gazeTyping.clicked.connect(lambda _event: self.handleGazeTyping())
         self.layout.addWidget(self.gazeTyping, 1, 0, 2, 2)
                
@@ -114,6 +112,7 @@ class KeyboardWidget(QWidget):
         self.cpslock = not self.cpslock
         self.updateCharactersCase()
         self.updateCapsLockDisplay()
+    
     
     def updateCapsLockDisplay(self):
         if self.cpslock:
@@ -135,6 +134,9 @@ class KeyboardWidget(QWidget):
         
         
     def updateCharactersCase(self):
+        if self.specialCharactersToggled:
+            return
+        
         if self.cpslock ^ self.shift:
             for n in range(len(self.keyboardButtons)):
                 self.keyboardButtons[n].setText(self.lines[n//10][n%10].upper())
@@ -167,8 +169,15 @@ class KeyboardWidget(QWidget):
         print(self.text)
         
         
-    def toggleSpecialCharacters():
-        print("Not yet implemented")
+    def toggleSpecialCharacters(self):
+        self.specialCharactersToggled = not self.specialCharactersToggled
+        
+        if self.specialCharactersToggled:
+            for n in range(len(self.specialLines)):
+                self.keyboardButtons[n+10].setText(self.specialLines[n])
+        
+        else:
+            self.updateCharactersCase()
         
         
     def handleBackSpace(self):
