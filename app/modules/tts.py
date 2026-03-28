@@ -20,12 +20,12 @@ class Singleton(type):
 class VoiceEngine(metaclass=Singleton):
     def __init__(self):
         self.queue = Queue()
-        self.thread = Thread(target=self._thread)
+        self.thread = Thread(target=self._thread, daemon=True)
         self.thread.start()
 
     def stop(self):
+        # On ne join pas le thread, il se coupera directement même s'il est en train de charger.
         self.queue.put(None)
-        self.thread.join()
 
     def read(self, text):
         self.queue.put(text)
