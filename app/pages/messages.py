@@ -1,9 +1,10 @@
-from PySide6.QtWidgets import QGridLayout, QWidget, QPushButton, QLabel
+from PySide6.QtWidgets import QGridLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt
+from . import Page
 
-class Messages(QWidget):
-    def __init__(self, parent):
-        super().__init__()
+class Messages(Page):
+    def __init__(self, *args):
+        super().__init__(*args)
 
         # Instanciation du layout
         self.layout = QGridLayout(self)
@@ -15,12 +16,7 @@ class Messages(QWidget):
         self._test.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Connection des events
-        self.homeButton.clicked.connect(lambda _event: self.switch(parent))
+        self.homeButton.clicked.connect(lambda _: self.switch("menu"))
 
         self.layout.addWidget(self._test, 0, 0)
         self.layout.addWidget(self.homeButton, 1, 0)
-
-    def switch(self, parent):
-        from .menu import Menu
-
-        parent.inner = Menu(parent)

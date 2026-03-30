@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import QWidget, QPushButton, QLabel, QHBoxLayout, QVBoxLayout
-from PySide6.QtCore import Qt, Signal, QObject
 from ..modules.settings import SettingsManager
+from . import Page
 
-class Settings(QWidget):
-    def __init__(self, parent):
-        super().__init__()
+class Settings(Page):
+    def __init__(self, *args):
+        super().__init__(*args)
 
         # Instanciation du layout
         self.layout = QVBoxLayout(self)
@@ -14,16 +14,11 @@ class Settings(QWidget):
         self.voiceChoice = Setting("voice", "Voix du text-to-speech", ["Femme", "Homme"], [0, 1])
 
         # Connection des events
-        self.homeButton.clicked.connect(lambda _event: self.switch(parent))
+        self.homeButton.clicked.connect(lambda _event: self.switch("menu"))
 
         self.layout.addWidget(self.voiceChoice)
         self.layout.addStretch(1)
         self.layout.addWidget(self.homeButton)
-
-    def switch(self, parent):
-        from .menu import Menu
-
-        parent.inner = Menu(parent)
 
 class Setting(QWidget):
     def __init__(self, name, description, options, values):

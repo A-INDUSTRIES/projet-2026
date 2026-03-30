@@ -1,12 +1,12 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout, QLabel, QSizePolicy
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout, QSizePolicy
+from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from ..modules.tts import VoiceEngine
 from .button import Button
 from pathlib import Path
 
 class KeyboardWidget(QWidget):    
-    def __init__(self, parent):
+    def __init__(self):
         super().__init__()
         
         # Initialisation du layout en grille
@@ -55,7 +55,7 @@ class KeyboardWidget(QWidget):
         # Retour au menu
         self.homeButton = QPushButton("menu") # A changer pour une icone
         self.homeButton.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.homeButton.clicked.connect(lambda _event: self.switch(parent))
+        self.homeButton.clicked.connect(lambda _event: self.parent().switch("menu"))
         self.layout.addWidget(self.homeButton, 4, 2, 1, 4)
         
         # Text-to-Speech
@@ -194,9 +194,3 @@ class KeyboardWidget(QWidget):
         
     def handleRightArrow(self):
         print("Right Arrow pressed, not implemented yet.")
-        
-        
-    def switch(self, parent):
-        from ..pages.menu import Menu
-
-        parent.inner = Menu(parent)
