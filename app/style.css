@@ -1,0 +1,16 @@
+Page {
+    background-color: #F8F9FA;
+}
+
+QPushButton, Button {
+    color: #000000;
+    background-color: #CED4DA;
+    border-style: solid; 
+    border-color: #ADB5BD;
+    border-radius: 5px;
+    border-width: 1px;
+}
+
+QLabel {
+    color: #000000;
+}
