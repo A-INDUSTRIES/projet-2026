@@ -6,6 +6,7 @@ from app.modules.tts import VoiceEngine
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self._keyboard # Variable pour conserver l'état du clavier
 
         # Définition des propiétés de la fenêtre
         self.setWindowTitle("Communiquer avec les yeux")
@@ -25,7 +26,12 @@ class MainWindow(QMainWindow):
                 case "contacts":
                     self.setCentralWidget(Contacts())
                 case "keyboard":
-                    self.setCentralWidget(Keyboard())
+                    # Si le clavier n'as jamais été ouvert on l'instancie
+                    # et on conserve son état (par exemple pour conserver le texte
+                    # qui a été écrit)
+                    if not self._keyboard:
+                        self._keyboard = Keyboard()
+                    self.setCentralWidget(self._keyboard)
                 case "messages":
                     self.setCentralWidget(Messages())
                 case "settings":
