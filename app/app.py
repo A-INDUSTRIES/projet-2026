@@ -6,7 +6,9 @@ from app.modules.tts import VoiceEngine
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self._keyboard # Variable pour conserver l'état du clavier
+        self.static_pages = {
+            "keyboard": Keyboard()
+        }
 
         # Définition des propiétés de la fenêtre
         self.setWindowTitle("Communiquer avec les yeux")
@@ -18,32 +20,30 @@ class MainWindow(QMainWindow):
         # On montre la fenêtre quand elle est prête
         self.show()
 
-    def switch(self, page: str| Page | None=None ):
-        if isinstance(page, str):
-            match page:
-                case "menu":
-                    self.setCentralWidget(Menu())
-                case "contacts":
-                    self.setCentralWidget(Contacts())
-                case "keyboard":
-                    # Si le clavier n'as jamais été ouvert on l'instancie
-                    # et on conserve son état (par exemple pour conserver le texte
-                    # qui a été écrit)
-                    if not self._keyboard:
-                        self._keyboard = Keyboard()
-                    self.setCentralWidget(self._keyboard)
-                case "messages":
-                    self.setCentralWidget(Messages())
-                case "settings":
-                    self.setCentralWidget(Settings())
-                case _:
-                    print(f"Warn: Page {page} does not exists")
-        elif isinstance(page, Page):
+    def switch(self, page: str | Page | None=None):
+        current = self.centralWidget()
+        if current and current in self.static_pages.values():
+            current.setParent(None)
+
+        if isinstance(page, Page):
             self.setCentralWidget(page)
-        else:
-            print("Warn: switch called without an argument")
 
-
+        if isinstance(page, str):
+            if page in self.static_pages:
+                self.setCentralWidget(self.static_pages[page])
+            else:
+                match page:
+                    case "menu":
+                        self.setCentralWidget(Menu())
+                    case "contacts":
+                        self.setCentralWidget(Contacts())
+                    case "messages":
+                        self.setCentralWidget(Messages())
+                    case "settings":
+                        self.setCentralWidget(Settings())
+                    case _:
+                        print(f"Warn: Page {page} does not exists")
+        
     def showEvent(self, event):
         VoiceEngine()
         return super().showEvent(event)
