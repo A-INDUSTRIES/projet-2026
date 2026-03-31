@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import Qt
 from app.pages import *
 from app.modules.tts import VoiceEngine
+from app.modules.logging import *
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -27,8 +28,7 @@ class MainWindow(QMainWindow):
 
         if isinstance(page, Page):
             self.setCentralWidget(page)
-
-        if isinstance(page, str):
+        elif isinstance(page, str):
             if page in self.static_pages:
                 self.setCentralWidget(self.static_pages[page])
             else:
@@ -42,7 +42,9 @@ class MainWindow(QMainWindow):
                     case "settings":
                         self.setCentralWidget(Settings())
                     case _:
-                        print(f"Warn: Page {page} does not exists")
+                        warn(f"Page {page} does not exists.")
+        else:
+            warn("Switch called with no argument or of wrong type.")
         
     def showEvent(self, event):
         VoiceEngine()

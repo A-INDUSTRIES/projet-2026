@@ -3,8 +3,9 @@ import requests
 from zipfile import ZipFile
 from io import BytesIO
 from pathlib import Path
-from threading import Thread, Event
+from threading import Thread
 from queue import Queue
+from .logging import *
 
 MODEL_PATH = Path(__file__).parent / "voice_model"
 MODEL_URL = "https://cloud.aindustries.be/public.php/dav/files/Paik9imyoMJjsLK/?accept=zip"
@@ -31,19 +32,19 @@ class VoiceEngine(metaclass=Singleton):
         self.queue.put(text)
 
     def _thread(self):
-        print("Démarrage du VoiceEngine")
+        info("Démarrage du VoiceEngine")
         from kokoro import KPipeline, KModel
 
         # Si le modèle n'a pas été téléchargé
         # Sert durant le dev: pour la release on installera ces fichiers durant l'installation
         if not MODEL_PATH.exists():
-            print("Téléchargement du modèle pour la voix en cours.")
+            info("Téléchargement du modèle pour la voix en cours.")
             response = requests.get(MODEL_URL)
 
             with ZipFile(BytesIO(response.content)) as zip:
                 zip.extractall(MODEL_PATH.parent)
 
-        print("Initialisation du modèle")
+        debug("Initialisation du modèle")
         model = KModel(repo_id="hexgrad/Kokoro-82M", 
                     model=MODEL_PATH / "kokoro-v1_0.pth",
                     config=MODEL_PATH / "config.json")
@@ -57,10 +58,10 @@ class VoiceEngine(metaclass=Singleton):
 
         voice_path = MODEL_PATH / "voices" / "ff_siwis.pt"
 
-        print("Chargement du modèle terminé")
+        info("Chargement du modèle terminé")
 
         while True:
-            print("En attente d'une demande")
+            debug("En attente d'une demande")
             text = self.queue.get(block=True, timeout=None)
             if text==None:
                 break
@@ -69,4 +70,4 @@ class VoiceEngine(metaclass=Singleton):
                 stream.write(data)
 
         stream.stop()
-        print("VoiceEngine arrêté")
+        info("VoiceEngine arrêté")

@@ -1,9 +1,13 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QGridLayout, QSizePolicy
+from pathlib import Path
+
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QGridLayout, QPushButton, QSizePolicy, QWidget
+
+from ..modules.logging import *
 from ..modules.tts import VoiceEngine
 from .button import Button
-from pathlib import Path
+
 
 class KeyboardWidget(QWidget):    
     def __init__(self):
@@ -159,7 +163,7 @@ class KeyboardWidget(QWidget):
         
         
     def handleGazeTyping(self):
-        print("Not yet implemented duh")
+        warn("Not yet implemented duh")
         
         
     def handleCharacterButton(self, character):
@@ -170,7 +174,7 @@ class KeyboardWidget(QWidget):
             self.updateCharactersCase()
             self.updateShiftKeyDisplay()
         
-        print(self.text)
+        debug(self.text)
         
         
     def toggleSpecialCharacters(self):
@@ -180,17 +184,17 @@ class KeyboardWidget(QWidget):
         
     def handleBackSpace(self):
         self.text = self.text[:-1]
-        print(self.text)
+        debug(self.text)
         
     
     def handleTextErasion(self):
         self.text = ""
-        print(self.text)
+        debug(self.text)
         
         
     def handleLeftArrow(self):
-        print("Left Arrow pressed, not implemented yet.")
+        warn("Left Arrow pressed, not implemented yet.")
         
         
     def handleRightArrow(self):
-        print("Right Arrow pressed, not implemented yet.")
+        warn("Right Arrow pressed, not implemented yet.")
