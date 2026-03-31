@@ -17,20 +17,26 @@ class MainWindow(QMainWindow):
         # On montre la fenêtre quand elle est prête
         self.show()
 
-    def switch(self, page="", instance=None):
-        match page:
-            case "menu":
-                self.setCentralWidget(Menu(self))
-            case "contacts":
-                self.setCentralWidget(Contacts(self))
-            case "keyboard":
-                self.setCentralWidget(Keyboard(self))
-            case "messages":
-                self.setCentralWidget(Messages(self))
-            case "settings":
-                self.setCentralWidget(Settings(self))
-            case "":
-                self.setCentralWidget(instance)
+    def switch(self, page: str| Page | None=None ):
+        if isinstance(page, str):
+            match page:
+                case "menu":
+                    self.setCentralWidget(Menu())
+                case "contacts":
+                    self.setCentralWidget(Contacts())
+                case "keyboard":
+                    self.setCentralWidget(Keyboard())
+                case "messages":
+                    self.setCentralWidget(Messages())
+                case "settings":
+                    self.setCentralWidget(Settings())
+                case _:
+                    print(f"Warn: Page {page} does not exists")
+        elif isinstance(page, Page):
+            self.setCentralWidget(page)
+        else:
+            print("Warn: switch called without an argument")
+
 
     def showEvent(self, event):
         VoiceEngine()

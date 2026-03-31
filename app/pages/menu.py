@@ -21,7 +21,7 @@ class Menu(Page):
         self.messagesButton.clicked.connect(lambda _event: self.switch("messages"))
         self.contactsButton.clicked.connect(lambda _event: self.switch("contacts"))
         self.settingsButton.clicked.connect(lambda _event: self.switch("settings"))
-        self.exitButton.clicked.connect(lambda _event: self.parent.close())
+        self.exitButton.clicked.connect(lambda _event: self.parent().close())
 
         # Modifier les boutons pour qu'ils s'agrandissent
         self.keyboardButton.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
