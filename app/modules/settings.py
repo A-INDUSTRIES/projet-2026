@@ -1,6 +1,7 @@
 import json, os
 from pathlib import Path
 from sys import platform
+from .logging import warn
 
 def getSettingsPath():
     """ Permet de récupérer le chemin du fichier de
@@ -29,14 +30,17 @@ class SettingsManager():
 
     def getSetting(self, key):
         if not key in self.settings.keys():
-            raise KeyError(f"The setting '{key}' does not exists.\nThe following do: 'fontSize'")
+            warn(f"The setting '{key}' does not exists, adding default value.")
+            self.setSetting(key, None)
         return self.settings[key]
     
-    def setSetting(self, key, value):
+    def setSetting(self, key, value=None):
         match key:
             case "fontSize":
-                if not value in [10, 12, 16, 20, 22]:
-                    raise ValueError(f"The setting 'fontSize' can only take [10, 12, 16, 20, 22] as value, {value} was given.")
+                if value==None:
+                    value = 16
+                if not value in [10, 12, 16, 20, 24]:
+                    raise ValueError(f"The setting 'fontSize' can only take one of [10, 12, 16, 20, 24] as value, {value} was given.")
                 self.settings[key] = value
                 self.saveSettings()
     

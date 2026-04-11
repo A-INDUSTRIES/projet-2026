@@ -11,7 +11,7 @@ class Settings(Page):
 
         # Instanciation des widgets
         self.homeButton = QPushButton("menu") # A changer pour une icone
-        self.voiceChoice = Setting("fontSize", "Taille de la police d'écriture", ["Très petite", "Petite", "Normale", "Grande", "Très grande"], [10, 12, 16, 20, 22])
+        self.voiceChoice = Setting("fontSize", "Taille de la police d'écriture", ["Très petite", "Petite", "Normale", "Grande", "Très grande"], [10, 12, 16, 20, 24])
 
         # Connection des events
         self.homeButton.clicked.connect(lambda _event: self.switch("menu"))
