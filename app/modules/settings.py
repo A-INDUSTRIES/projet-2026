@@ -1,23 +1,11 @@
-import json, os
-from pathlib import Path
-from sys import platform
+import json
 from .logging import warn
+from .utils import getUserDataPath, Singleton
 
 def getSettingsPath():
-    """ Permet de récupérer le chemin du fichier de
-    configuration en fonction du système.
-    Pour l'instant le support s'étend à Windows et Linux
-    """
-    match platform:
-        case "win32":
-            path =  Path(os.environ["APPDATA"])
-        case "linux":
-            path =  Path.home() / ".config"
-        case _:
-            raise NotImplementedError(f"Settings for {platform} are not yet supported.")
-    return path / "CommuniquerAvecLesYeux" / "settings.json"
+    return getUserDataPath() / "settings.json"
 
-class SettingsManager():
+class SettingsManager(metaclass=Singleton):
     def __init__(self):
         self.settingsPath = getSettingsPath()
         if not self.settingsPath.exists():
