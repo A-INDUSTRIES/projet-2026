@@ -3,6 +3,7 @@ from PySide6.QtGui import Qt
 from app.pages import *
 from app.modules.tts import VoiceEngine
 from app.modules.logging import *
+from app.modules.settings import SettingsManager
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -14,9 +15,10 @@ class MainWindow(QMainWindow):
         # Définition des propiétés de la fenêtre
         self.setWindowTitle("Communiquer avec les yeux")
         self.setWindowState(Qt.WindowState.WindowFullScreen)
-        self.setStyleSheet(open("app/style.css").read())
 
         self.switch("menu")
+
+        self.updateStyle()
 
         # On montre la fenêtre quand elle est prête
         self.show()
@@ -53,3 +55,10 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         VoiceEngine().stop()
         return super().closeEvent(event)
+    
+    def updateStyle(self):
+        stylesheet = open("app/style.css").read()
+        fontSize = SettingsManager().getSetting("fontSize")
+        stylesheet = stylesheet.replace("var(base)", f"{fontSize}px")
+        print(stylesheet)
+        self.setStyleSheet(stylesheet)

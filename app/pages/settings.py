@@ -11,7 +11,7 @@ class Settings(Page):
 
         # Instanciation des widgets
         self.homeButton = QPushButton("menu") # A changer pour une icone
-        self.voiceChoice = Setting("voice", "Voix du text-to-speech", ["Femme", "Homme"], [0, 1])
+        self.voiceChoice = Setting("fontSize", "Taille de la police d'écriture", ["Très petite", "Petite", "Normale", "Grande", "Très grande"], [10, 12, 16, 20, 22])
 
         # Connection des events
         self.homeButton.clicked.connect(lambda _event: self.switch("menu"))
@@ -19,6 +19,9 @@ class Settings(Page):
         self.layout.addWidget(self.voiceChoice)
         self.layout.addStretch(1)
         self.layout.addWidget(self.homeButton)
+    
+    def updateStyle(self):
+        self.parent().updateStyle()
 
 class Setting(QWidget):
     def __init__(self, name, description, options, values):
@@ -45,6 +48,7 @@ class Setting(QWidget):
     def setValue(self, value):
         SettingsManager().setSetting(self.name, value)
         self.updateButtons()
+        self.parent().updateStyle()
 
     def updateButtons(self):
         currentSettingValue = SettingsManager().getSetting(self.name)
