@@ -2,6 +2,27 @@ Page {
     background-color: #F8F9FA;
 }
 
+Settings QPushButton {
+    padding: 15px;
+}
+
+Setting {
+    background-color: #CED4DA;
+    border-style: solid; 
+    border-color: #ADB5BD;
+    border-radius: 5px;
+    border-width: 1px;
+}
+
+Setting QPushButton {
+    background-color: #ADB5BD;
+    border-style: solid; 
+    border-color: #6C757D;
+    border-radius: 5px;
+    border-width: 1px;
+    padding: 15px;
+}
+
 QPushButton, Button {
     color: #000000;
     background-color: #CED4DA;

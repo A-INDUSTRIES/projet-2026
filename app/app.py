@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QMainWindow
-from PySide6.QtGui import Qt
+from PySide6.QtGui import Qt, QShortcut, QKeySequence
 from app.pages import *
 from app.modules.tts import VoiceEngine
 from app.modules.logging import *
@@ -15,6 +15,9 @@ class MainWindow(QMainWindow):
         # Définition des propiétés de la fenêtre
         self.setWindowTitle("Communiquer avec les yeux")
         self.setWindowState(Qt.WindowState.WindowFullScreen)
+
+        self.refreshShortcut = QShortcut(QKeySequence('r'), self)
+        self.refreshShortcut.activated.connect(self.updateStyle)
 
         self.switch("menu")
 
