@@ -11,7 +11,7 @@ class SettingsManager(metaclass=Singleton):
         if not self.settingsPath.exists():
             self.settingsPath.parent.mkdir(exist_ok=True)
             with open(self.settingsPath, 'w') as f:
-                json.dump({"fontSize": 16}, f)
+                json.dump({"fontSize": 24}, f)
         
         with open(self.settingsPath, "r") as f:
             self.settings = json.load(f)
@@ -26,9 +26,9 @@ class SettingsManager(metaclass=Singleton):
         match key:
             case "fontSize":
                 if value==None:
-                    value = 16
-                if not value in [10, 12, 16, 20, 24]:
-                    raise ValueError(f"The setting 'fontSize' can only take one of [10, 12, 16, 20, 24] as value, {value} was given.")
+                    value = 24
+                if not value in [10, 18, 24, 32, 40]:
+                    raise ValueError(f"The setting 'fontSize' can only take one of [10, 18, 24, 32, 40] as value, {value} was given.")
                 self.settings[key] = value
                 self.saveSettings()
     

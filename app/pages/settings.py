@@ -1,4 +1,5 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QLabel, QHBoxLayout, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QPushButton, QLabel, QHBoxLayout, QVBoxLayout, QStyleOption, QStyle, QSizePolicy
+from PySide6.QtGui import QPainter
 from ..modules.settings import SettingsManager
 from . import Page
 
@@ -11,14 +12,19 @@ class Settings(Page):
 
         # Instanciation des widgets
         self.homeButton = QPushButton("menu") # A changer pour une icone
-        self.voiceChoice = Setting("fontSize", "Taille de la police d'écriture", ["Très petite", "Petite", "Normale", "Grande", "Très grande"], [10, 12, 16, 20, 24])
+        self.calibrate = QPushButton("Recalibrer le tracking")
+        self.voiceChoice = Setting("fontSize", "Taille de la police d'écriture", ["Très petite", "Petite", "Normale", "Grande", "Très grande"], [10, 18, 24, 32, 40])
+        self.bottomRow = QHBoxLayout()
 
         # Connection des events
         self.homeButton.clicked.connect(lambda _event: self.switch("menu"))
 
         self.layout.addWidget(self.voiceChoice)
         self.layout.addStretch(1)
-        self.layout.addWidget(self.homeButton)
+        self.bottomRow.addWidget(self.homeButton)
+        self.bottomRow.addWidget(self.calibrate)
+        self.bottomRow.addStretch(1)
+        self.layout.addLayout(self.bottomRow)
     
     def updateStyle(self):
         self.parent().updateStyle()
@@ -58,3 +64,9 @@ class Setting(QWidget):
                 button.setStyleSheet("color:red;")
             else:
                 button.setStyleSheet("")
+
+    def paintEvent(self, _):
+        opt = QStyleOption()
+        opt.initFrom(self)
+        p = QPainter(self)
+        self.style().drawPrimitive(QStyle.PrimitiveElement.PE_Widget, opt, p, self)
