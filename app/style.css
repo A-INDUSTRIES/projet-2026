@@ -2,11 +2,15 @@ Page {
     background-color: #F8F9FA;
 }
 
-Settings QPushButton {
+Page QPushButton {
     padding: 15px;
 }
 
-Setting {
+Contacts QPushButton {
+    text-align: left;
+}
+
+Setting, Contact {
     background-color: #CED4DA;
     border-style: solid; 
     border-color: #ADB5BD;
@@ -14,7 +18,7 @@ Setting {
     border-width: 1px;
 }
 
-Setting QPushButton {
+Setting QPushButton, Contact QPushButton {
     background-color: #ADB5BD;
     border-style: solid; 
     border-color: #6C757D;
@@ -36,4 +40,8 @@ QPushButton, Button {
 QLabel {
     color: #000000;
     font-size: var(base);
+}
+
+QScrollArea {
+    background-color: transparent;
 }
