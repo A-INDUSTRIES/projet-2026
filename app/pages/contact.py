@@ -2,9 +2,9 @@ from PySide6.QtWidgets import QGridLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt
 from . import Page
 
-class Contact(Page):
-    def __init__(self, *args):
-        super().__init__(*args)
+class ContactPage(Page):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         # Instanciation du layout
         self.layout = QGridLayout(self)

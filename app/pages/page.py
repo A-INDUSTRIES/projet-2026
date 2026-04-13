@@ -2,8 +2,8 @@ from PySide6.QtWidgets import QWidget, QStyleOption, QStyle
 from PySide6.QtGui import QPainter
 
 class Page(QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def switch(self, page):
         self.parent().switch(page)

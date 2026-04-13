@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QScrollArea, QSi
 from app.modules.contacts import Contact as C
 from app.modules.contacts import ContactsManager
 from . import Page
+from . import ContactPage
 
 class Contacts(Page):
     def __init__(self, *args):
@@ -16,29 +17,34 @@ class Contacts(Page):
         self.homeButton = QPushButton("menu") # A changer pour une icone
         self.bottomRow = QHBoxLayout()
         self.contacts = QScrollArea()
+        self.createContactButton = QPushButton("Ajouter un contact")
 
+        self.title.setObjectName("title")
         self.contacts.setLayout(QVBoxLayout())
         self.contacts.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
 
         # Connection des events
         self.homeButton.clicked.connect(lambda _event: self.switch("menu"))
+        self.createContactButton.clicked.connect(self.createContact)
 
-        test = Contact(C({"name": "test", "email": "test@gmail.com"}))
-        self.contacts.layout().addWidget(test)
+        _test = Contact(C({"name": "test", "email": "test@gmail.com"}))
+        self.contacts.layout().addWidget(_test)
 
         for contact in ContactsManager().getContacts():
             widget = Contact(contact)
             self.contacts.layout().addWidget(widget)
 
-        self.createContact = QPushButton("Ajouter un contact")
-        self.contacts.layout().addWidget(self.createContact)
-        self.contacts.layout().addStretch(1)
-
         self.layout.addWidget(self.title)
+        self.contacts.layout().addWidget(self.createContactButton)
+        self.contacts.layout().addStretch(1)
         self.layout.addWidget(self.contacts)
         self.bottomRow.addWidget(self.homeButton)
         self.bottomRow.addStretch(1)
         self.layout.addLayout(self.bottomRow)
+
+    def createContact(self):
+        page = ContactPage(parent = self.parent())
+        self.switch(page)
 
 class Contact(QWidget):
     def __init__(self, contact):

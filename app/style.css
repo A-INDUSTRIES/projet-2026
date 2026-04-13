@@ -6,6 +6,10 @@ Page QPushButton {
     padding: 15px;
 }
 
+QLabel#title {
+    font-size: var(large);
+}
+
 Contacts QPushButton {
     text-align: left;
 }
