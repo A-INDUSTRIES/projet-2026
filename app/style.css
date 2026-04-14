@@ -49,3 +49,8 @@ QLabel {
 QScrollArea {
     background-color: transparent;
 }
+
+QLineEdit {
+    background-color: transparent;
+    color: black;
+}
