@@ -1,5 +1,6 @@
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QStyle, QStyleOption, QVBoxLayout, QWidget
+from PySide6.QtCore import Signal
 from app.modules.contacts import Contact as C
 from app.modules.contacts import ContactsManager
 from . import Page
@@ -24,14 +25,13 @@ class Contacts(Page):
         self.contacts.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
 
         # Connection des events
-        self.homeButton.clicked.connect(lambda _event: self.switch("menu"))
+        self.homeButton.clicked.connect(lambda _: self.switch("menu"))
         self.createContactButton.clicked.connect(self.createContact)
 
-        _test = Contact(C({"name": "test", "email": "test@gmail.com"}))
-        self.contacts.layout().addWidget(_test)
-
-        for contact in ContactsManager().getContacts():
-            widget = Contact(contact)
+        for id, contact in ContactsManager().getContacts().items():
+            widget = Contact(id, contact)
+            widget.openEdit.connect(self.editContact)
+            widget.deleted.connect(lambda: self.deleteContact(widget))
             self.contacts.layout().addWidget(widget)
 
         self.layout.addWidget(self.title)
@@ -46,23 +46,47 @@ class Contacts(Page):
         page = ContactPage(parent = self.parent())
         self.switch(page)
 
+    def editContact(self, id, contact):
+        page = ContactPage(id=id, name=contact.name, email=contact.email, parent = self.parent())
+        self.switch(page)
+
+    def deleteContact(self, widget):
+        self.contacts.layout().removeWidget(widget)
+        widget.deleteLater()
+
 class Contact(QWidget):
-    def __init__(self, contact):
-        super().__init__()
+    openEdit = Signal(int, C)
+    deleted = Signal()
+
+    def __init__(self, id, contact, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.id = id
+        self.contact = contact
+
         self.name = QLabel(contact.name)
         self.email = QLabel(contact.email)
-        self.edit = QPushButton("modifier")
-        self.delete = QPushButton("supprimer")
+        self.editButton = QPushButton("modifier")
+        self.deleteButton = QPushButton("supprimer")
 
         self.layout = QHBoxLayout(self)
         self.info = QVBoxLayout()
+
+        self.editButton.clicked.connect(self.edit)
+        self.deleteButton.clicked.connect(self.delete)
 
         self.info.addWidget(self.name)
         self.info.addWidget(self.email)
         self.layout.addLayout(self.info)
         self.layout.addStretch(1)
-        self.layout.addWidget(self.edit)
-        self.layout.addWidget(self.delete)
+        self.layout.addWidget(self.editButton)
+        self.layout.addWidget(self.deleteButton)
+
+    def edit(self):
+        self.openEdit.emit(self.id, self.contact)
+
+    def delete(self):
+        ContactsManager().deleteContact(self.id)
+        self.deleted.emit()
 
     def paintEvent(self, _):
         opt = QStyleOption()
