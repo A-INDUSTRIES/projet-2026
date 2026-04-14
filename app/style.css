@@ -55,3 +55,12 @@ QLabel {
 QScrollArea {
     background-color: transparent;
 }
+
+QWidget#contacts {
+    background-color: transparent;
+}
+
+QLineEdit {
+    background-color: transparent;
+    color: black;
+}

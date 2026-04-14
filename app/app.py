@@ -60,6 +60,7 @@ class MainWindow(QMainWindow):
         return super().closeEvent(event)
     
     def updateStyle(self):
+        info("Mise à jour du style")
         stylesheet = open("app/style.css").read()
         fontSize = SettingsManager().getSetting("fontSize")
         stylesheet = stylesheet.replace("var(base)", f"{fontSize}px")
