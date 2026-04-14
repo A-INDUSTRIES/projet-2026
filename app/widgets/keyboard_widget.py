@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from PySide6.QtCore import QSize
+from PySide6.QtCore import QSize, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QGridLayout, QPushButton, QSizePolicy, QWidget
 
@@ -10,14 +10,13 @@ from .button import Button
 
 
 class KeyboardWidget(QWidget):    
+    textUpdated = Signal(str)
+    
     def __init__(self):
         super().__init__()
         
         # Initialisation du layout en grille
         self.layout = QGridLayout(self)
-        
-        # Texte écrit sur le clavier (se réinitialise à chaque ouverture du clavier, peut-être changer ?)
-        self.text = ""
         
         # Gestion des majuscules avec Caps Lock et Shift
         self.cpsLock = False
@@ -61,14 +60,7 @@ class KeyboardWidget(QWidget):
         self.homeButton.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.homeButton.clicked.connect(lambda _event: self.parent().switch("menu"))
         self.layout.addWidget(self.homeButton, 4, 2, 1, 4)
-        
-        # Text-to-Speech
-        # NE RESTERA PAS DANS LE CLAVIER, FONCTIONNALITE TEST
-        self.tts = QPushButton("Text-to\nSpeech")
-        self.tts.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.layout.addWidget(self.tts, 0, 22, 1, 3)
-        self.tts.clicked.connect(lambda _event: self.handleTextToSpeech())
-        
+                
         # Espace
         self.space = Button(" ")
         self.space.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -79,13 +71,13 @@ class KeyboardWidget(QWidget):
         self.backSpace = QPushButton("Back\nSpace")
         self.backSpace.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.backSpace.clicked.connect(lambda _event: self.handleBackSpace())
-        self.layout.addWidget(self.backSpace, 1, 22, 1, 2)
+        self.layout.addWidget(self.backSpace, 0, 22, 2, 2)
         
         # Bouton effacer tout le texte
         self.eraseText = QPushButton("Effacer\ntout le\ntexte")
         self.eraseText.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.eraseText.clicked.connect(lambda _event: self.handleTextErasion())
-        self.layout.addWidget(self.eraseText, 2, 22, 1, 2)
+        self.layout.addWidget(self.eraseText, 2, 22, 2, 2)
         
         # Flèche gauche
         self.leftArrow = QPushButton("<")
@@ -156,45 +148,43 @@ class KeyboardWidget(QWidget):
         for key in self.keyboardButtons:
             key.toggleShift()
         
-            
-    def handleTextToSpeech(self):
-        tts = VoiceEngine()
-        tts.read(self.text)
-        
         
     def handleGazeTyping(self):
         warn("Not yet implemented duh")
         
         
-    def handleCharacterButton(self, character):
-        self.text += character
-       
+    def toggleSpecialCharacters(self):
+        for key in self.keyboardButtons:
+            key.toggleSpecial()  
+            
+              
+    def handleCharacterButton(self, character):       
         if self.shift:
             self.shift = False
             self.updateCharactersCase()
             self.updateShiftKeyDisplay()
         
-        debug(self.text)
+        #debug(self.text)
+        self.emitSignal(character)
         
-        
-    def toggleSpecialCharacters(self):
-        for key in self.keyboardButtons:
-            key.toggleSpecial()
-       
-        
+    
     def handleBackSpace(self):
-        self.text = self.text[:-1]
-        debug(self.text)
+        #debug(self.text)
+        self.emitSignal("backspace")
         
     
     def handleTextErasion(self):
-        self.text = ""
-        debug(self.text)
+        #debug(self.text)
+        self.emitSignal("reset")
+        
+        
+    def emitSignal(self, txt):
+        self.textUpdated.emit(txt)
         
         
     def handleLeftArrow(self):
-        warn("Left Arrow pressed, not implemented yet.")
+        self.textUpdated.emit("left")
         
         
     def handleRightArrow(self):
-        warn("Right Arrow pressed, not implemented yet.")
+        self.textUpdated.emit("right")
