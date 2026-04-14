@@ -1,6 +1,6 @@
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QStyle, QStyleOption, QVBoxLayout, QWidget
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Qt
 from app.modules.contacts import Contact as C
 from app.modules.contacts import ContactsManager
 from . import Page
@@ -18,10 +18,15 @@ class Contacts(Page):
         self.homeButton = QPushButton("menu") # A changer pour une icone
         self.bottomRow = QHBoxLayout()
         self.contacts = QScrollArea()
+        self.contactsContent = QWidget()
+        self.contactsLayout = QVBoxLayout(self.contactsContent)
         self.createContactButton = QPushButton("Ajouter un contact")
 
         self.title.setObjectName("title")
-        self.contacts.setLayout(QVBoxLayout())
+        self.contactsContent.setObjectName("contacts")
+        self.contactsLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.contacts.setWidget(self.contactsContent)
+        self.contacts.setWidgetResizable(True)
         self.contacts.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
 
         # Connection des events
@@ -31,12 +36,12 @@ class Contacts(Page):
         for id, contact in ContactsManager().getContacts().items():
             widget = Contact(id, contact)
             widget.openEdit.connect(self.editContact)
-            widget.deleted.connect(lambda: self.deleteContact(widget))
-            self.contacts.layout().addWidget(widget)
+            widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
+            widget.deleted.connect(lambda widget=widget: self.deleteContact(widget))
+            self.contactsLayout.addWidget(widget)
 
         self.layout.addWidget(self.title)
-        self.contacts.layout().addWidget(self.createContactButton)
-        self.contacts.layout().addStretch(1)
+        self.contactsLayout.addWidget(self.createContactButton)
         self.layout.addWidget(self.contacts)
         self.bottomRow.addWidget(self.homeButton)
         self.bottomRow.addStretch(1)
@@ -51,7 +56,7 @@ class Contacts(Page):
         self.switch(page)
 
     def deleteContact(self, widget):
-        self.contacts.layout().removeWidget(widget)
+        self.contactsLayout.removeWidget(widget)
         widget.deleteLater()
 
 class Contact(QWidget):
