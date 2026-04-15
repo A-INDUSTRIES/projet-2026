@@ -15,7 +15,7 @@ Contacts QPushButton {
 }
 
 TextDisplayWidget {
-    font-size: 30px;
+    font-size: var(extra-large);
     background-color: transparent;
     color: black;
 }

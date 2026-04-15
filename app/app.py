@@ -65,4 +65,5 @@ class MainWindow(QMainWindow):
         fontSize = SettingsManager().getSetting("fontSize")
         stylesheet = stylesheet.replace("var(base)", f"{fontSize}px")
         stylesheet = stylesheet.replace("var(large)", f"{fontSize+12}px")
+        stylesheet = stylesheet.replace("var(extra-large)", f"{fontSize+20}px")
         self.setStyleSheet(stylesheet)
