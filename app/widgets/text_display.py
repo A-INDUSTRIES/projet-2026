@@ -1,6 +1,7 @@
 from PySide6.QtCore import QSize, QTimer
 from PySide6.QtGui import QIcon, QTextCursor, QPainter, QColor
 from PySide6.QtWidgets import QTextEdit, QScrollBar
+from app.modules.logging import warn
 
 class TextDisplayWidget(QTextEdit):
     def __init__(self):
@@ -14,7 +15,6 @@ class TextDisplayWidget(QTextEdit):
     # Modifier la scroll bar et la rendre utilisable avec les yeux
         self.scrollbar = QScrollBar()
         self.setVerticalScrollBar(self.scrollbar)
-        self.scrollVal = self.scrollbar.value()
         
     # Pour avoir un curseur visible en permanence, même lorsque le focus est sur le clavier
         self.setCursorWidth(0)
@@ -25,15 +25,20 @@ class TextDisplayWidget(QTextEdit):
         
         
     def scrollText(self, type):
+        min_step = (self.scrollbar.maximum() - self.scrollbar.minimum())//10
         match type:
             case "up":
-                self.scrollVal = min(self.scrollbar.value(), max(abs(self.scrollbar.value() - self.scrollbar.minimum())//3, self.scrollbar.maximum()//4))
-                self.scrollbar.setValue(self.scrollVal)
+                step = abs(self.scrollbar.value() - self.scrollbar.minimum())//3
+                step = max(min_step, step)
+                new_val = max(self.scrollbar.minimum(), self.scrollbar.value() - step)
+                self.scrollbar.setValue(new_val)
             case "down":
-                self.scrollVal = max(self.scrollbar.value(), max(abs(self.scrollbar.value() - self.scrollbar.maximum())//3, self.scrollbar.maximum()//4))
-                self.scrollbar.setValue(self.scrollVal)
+                step = abs(self.scrollbar.maximum() - self.scrollbar.value())//3
+                step = max(min_step, step)
+                new_val = min(self.scrollbar.maximum(), self.scrollbar.value() + step)
+                self.scrollbar.setValue(new_val)
             case _:
-                pass
+                warn("Invalid scroll type for TextDisplayWidget")
     
     
     def blinkCursor(self):

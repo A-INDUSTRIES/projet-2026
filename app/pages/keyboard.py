@@ -65,9 +65,7 @@ class Keyboard(Page):
         self.layout.addWidget(self.scrollDown, 1, 8, 1, 1)
         
     def scrollTextUp(self):
-        print("scrollign up")
         self.textDisplay.scrollText("up")
         
     def scrollTextDown(self):
-        print("scrolling down")
         self.textDisplay.scrollText("down")
