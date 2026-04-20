@@ -1,0 +1,70 @@
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from base64 import urlsafe_b64decode
+from .utils import Singleton, getUserDataPath
+from .logger import debug
+from .messages import Message
+
+SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+
+class MailManager(metaclass=Singleton):
+    def __init__(self):
+        self.creds = None
+        path = getUserDataPath() / "token.json"
+        if path.exists():
+            self.creds = Credentials.from_authorized_user_file(path, SCOPES)
+            if not self.creds.valid:
+                self.creds.refresh(Request())
+
+    def login(self):
+        path = getUserDataPath() / "token.json"
+        flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+        self.creds = flow.run_local_server(port=0)
+        
+        with open(path, "w") as token:
+            token.write(self.creds.to_json())
+
+    def send(self, email, subject, message):
+        pass
+
+    def receive(self):
+        if not self.creds:
+            self.login()
+
+        service = build("gmail", "v1", credentials=self.creds)
+
+        results = service.users().messages().list(userId="me", labelIds=["INBOX"]).execute()
+
+        raw_messages = results.get("messages", [])
+
+        messages = []
+
+        for message in raw_messages:
+            debug(f'Message ID: {message["id"]}')
+            msg = (
+                service.users().messages().get(userId="me", id=message["id"], format='full').execute()
+            )
+            content = ""
+            payload = msg['payload']
+            if "text/html" in payload['mimeType']:
+                content = urlsafe_b64decode(payload['body']['data']).decode()
+            elif "multipart" in payload['mimeType']:
+                for part in payload['parts']:
+                    if "text/html" in part['mimeType']:
+                        content += urlsafe_b64decode(part['body']['data']).decode()
+            for header in payload['headers']:
+                if header['name'] == "Subject":
+                    subject = header["value"]
+                if header['name'] == 'From':
+                    sender = header["value"]
+            messages.append(Message(sender, subject, content))
+
+        return messages
+
+if __name__ == "__main__":
+    mail = MailManager()
+    mail.login()
+    mail.receive()
