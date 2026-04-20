@@ -20,7 +20,7 @@ TextDisplayWidget {
     color: black;
 }
 
-Setting, Contact {
+Setting, Contact, Message {
     background-color: #CED4DA;
     border-style: solid; 
     border-color: #ADB5BD;
@@ -28,7 +28,7 @@ Setting, Contact {
     border-width: 1px;
 }
 
-Setting QPushButton, Contact QPushButton {
+Setting QPushButton, Contact QPushButton, Message QPushButton {
     background-color: #ADB5BD;
     border-style: solid; 
     border-color: #6C757D;
@@ -57,6 +57,10 @@ QScrollArea {
 }
 
 QWidget#contacts {
+    background-color: transparent;
+}
+
+QWidget#messages {
     background-color: transparent;
 }
 
