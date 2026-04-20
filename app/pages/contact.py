@@ -1,8 +1,10 @@
-from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QWidget, QHBoxLayout, QLineEdit
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QWidget, QHBoxLayout, QGridLayout, QSizePolicy
+from PySide6.QtCore import Signal
 from . import Page
 from app.modules.logger import debug
 from app.modules.contacts import ContactsManager, Contact
+from app.widgets.line_edit import LineEdit
+from app.widgets.keyboard_widget import KeyboardWidget
 
 class ContactPage(Page):
     def __init__(self, *args, id=None, name="", email="", **kwargs):
@@ -14,7 +16,8 @@ class ContactPage(Page):
         self.email = email
 
         # Instanciation du layout
-        self.setLayout(QVBoxLayout(self))
+        self.grid = QGridLayout(self)
+        self.vbox = QVBoxLayout()
         self.bottomRow = QHBoxLayout()
 
         # Instanciation des widgets 
@@ -23,6 +26,7 @@ class ContactPage(Page):
         self.nameEdit = Value("Nom", name, "Ecrivez un nom")
         self.emailEdit = Value("Email", email, "Ecrivez une adresse mail")
         self.saveButton = QPushButton("sauvegarder")
+        self.keyboard = KeyboardWidget()
 
         self.title.setObjectName("title")
 
@@ -31,15 +35,21 @@ class ContactPage(Page):
         self.saveButton.clicked.connect(self.save)
         self.nameEdit.valueChanged.connect(self.setName)
         self.emailEdit.valueChanged.connect(self.setEmail)
-
-        self.layout().addWidget(self.title)
-        self.layout().addWidget(self.nameEdit)
-        self.layout().addWidget(self.emailEdit)
-        self.layout().addStretch(1)
+        self.keyboard.textUpdated.connect(self.nameEdit.updateText)
+        self.keyboard.textUpdated.connect(self.emailEdit.updateText)
+        
         self.bottomRow.addWidget(self.homeButton)
         self.bottomRow.addWidget(self.saveButton)
         self.bottomRow.addStretch(1)
-        self.layout().addLayout(self.bottomRow)
+
+        self.vbox.addWidget(self.title)
+        self.vbox.addWidget(self.nameEdit)
+        self.vbox.addWidget(self.emailEdit)
+        self.vbox.addStretch(1)
+        self.vbox.addLayout(self.bottomRow)
+
+        self.grid.addLayout(self.vbox, 0, 0, 5, 1)
+        self.grid.addWidget(self.keyboard, 5, 0, 10, 1)
 
     def save(self):
         contact = Contact(name=self.name, email=self.email)
@@ -59,20 +69,31 @@ class Value(QWidget):
 
     def __init__(self, name, value, placeholder):
         super().__init__()
+        self.editing = False
+
         self.setLayout(QHBoxLayout(self))
 
         self.vbox = QVBoxLayout()
         self.nameLabel = QLabel(name)
-        self.valueLabel = QLineEdit(value)
+        self.valueLabel = LineEdit(value)
         self.editButton = QPushButton("modifier")
 
         self.valueLabel.setPlaceholderText(placeholder)
         self.valueLabel.textChanged.connect(self.valueChange)
+        self.editButton.clicked.connect(self.toggleEdit)
 
         self.vbox.addWidget(self.nameLabel)
         self.vbox.addWidget(self.valueLabel)
         self.layout().addLayout(self.vbox)
         self.layout().addWidget(self.editButton)
 
-    def valueChange(self, text):
-        self.valueChanged.emit(text)
+    def valueChange(self):
+        self.valueChanged.emit(self.valueLabel.toPlainText())
+
+    def toggleEdit(self):
+        self.editing = not self.editing
+        debug(f"{self.nameLabel.text()} - {self.editing}")
+
+    def updateText(self, text):
+        if self.editing:
+            self.valueLabel.updateText(text)
