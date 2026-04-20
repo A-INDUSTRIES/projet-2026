@@ -49,6 +49,8 @@ class LineEdit(QTextEdit):
                 self.moveCursor(QTextCursor.MoveOperation.Left, QTextCursor.MoveMode.MoveAnchor)
             case "right":
                 self.moveCursor(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.MoveAnchor)
+            case "enter":
+                pass
             case _:
                 self.insertPlainText(char)
     
