@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QWidget, QHBoxLayout, QLineEdit
 from PySide6.QtCore import Qt, Signal
 from . import Page
-from app.modules.logging import debug
+from app.modules.logger import debug
 from app.modules.contacts import ContactsManager, Contact
 
 class ContactPage(Page):

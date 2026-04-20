@@ -1,7 +1,7 @@
 from PySide6.QtCore import QSize, QTimer
 from PySide6.QtGui import QIcon, QTextCursor, QPainter, QColor
 from PySide6.QtWidgets import QTextEdit, QScrollBar
-from app.modules.logging import warn
+from app.modules.logger import warn
 
 class TextDisplayWidget(QTextEdit):
     def __init__(self):

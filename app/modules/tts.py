@@ -4,7 +4,7 @@ from zipfile import ZipFile
 from io import BytesIO
 from threading import Thread
 from queue import Queue
-from .logging import *
+from .logger import *
 from .utils import Singleton, getUserDataPath
 
 MODEL_PATH = getUserDataPath() / "voice_model"

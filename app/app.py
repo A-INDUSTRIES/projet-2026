@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QMainWindow
 from PySide6.QtGui import Qt, QShortcut, QKeySequence
 from app.pages import *
 from app.modules.tts import VoiceEngine
-from app.modules.logging import *
+from app.modules.logger import *
 from app.modules.settings import SettingsManager
 
 class MainWindow(QMainWindow):

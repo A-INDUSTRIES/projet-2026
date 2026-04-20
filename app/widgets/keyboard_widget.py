@@ -4,7 +4,7 @@ from PySide6.QtCore import QSize, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QGridLayout, QPushButton, QSizePolicy, QWidget
 
-from ..modules.logging import *
+from ..modules.logger import *
 from ..modules.tts import VoiceEngine
 from .button import Button
 

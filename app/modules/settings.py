@@ -1,5 +1,5 @@
 import json
-from .logging import warn
+from .logger import warn
 from .utils import getUserDataPath, Singleton
 
 def getSettingsPath():
