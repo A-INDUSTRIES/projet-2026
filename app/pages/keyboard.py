@@ -4,6 +4,7 @@ from PySide6.QtCore import QSize
 from ..widgets.keyboard_widget import KeyboardWidget
 from ..widgets.text_display import TextDisplayWidget
 from . import Page
+from app.modules.tts import VoiceEngine
 from pathlib import Path
 
 class Keyboard(Page):
@@ -35,6 +36,7 @@ class Keyboard(Page):
         self.tts = QPushButton("Text to\nSpeech")
         self.tts.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.MinimumExpanding)
         self.layout.addWidget(self.tts, 0, 9, 1, 1)
+        self.tts.clicked.connect(self.textToSpeech)
         
         # Mail
         self.mail = QPushButton("Envoyer\npar mail")
@@ -69,3 +71,6 @@ class Keyboard(Page):
         
     def scrollTextDown(self):
         self.textDisplay.scrollText("down")
+
+    def textToSpeech(self):
+        VoiceEngine().read(self.textDisplay.toPlainText())
