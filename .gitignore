@@ -10,3 +10,6 @@ wheels/
 .venv
 app/modules/voice_model/*
 app/modules/voice_model
+
+# App credentials
+credentials.json
