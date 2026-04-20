@@ -71,7 +71,13 @@ class KeyboardWidget(QWidget):
         self.backSpace = QPushButton("Back\nSpace")
         self.backSpace.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.backSpace.clicked.connect(lambda _event: self.handleBackSpace())
-        self.layout.addWidget(self.backSpace, 0, 22, 2, 2)
+        self.layout.addWidget(self.backSpace, 0, 22, 1, 2)
+        
+        # Touche Enter
+        self.enter = QPushButton("Enter")
+        self.enter.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.enter.clicked.connect(lambda _event: self.handleEnter())
+        self.layout.addWidget(self.enter, 1, 22, 1, 2)
         
         # Bouton effacer tout le texte
         self.eraseText = QPushButton("Effacer\ntout le\ntexte")
@@ -164,18 +170,19 @@ class KeyboardWidget(QWidget):
             self.updateCharactersCase()
             self.updateShiftKeyDisplay()
         
-        #debug(self.text)
         self.emitSignal(character)
         
     
     def handleBackSpace(self):
-        #debug(self.text)
         self.emitSignal("backspace")
         
     
     def handleTextErasion(self):
-        #debug(self.text)
         self.emitSignal("reset")
+        
+    
+    def handleEnter(self):
+        self.emitSignal("enter")
         
         
     def emitSignal(self, txt):

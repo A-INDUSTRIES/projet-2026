@@ -74,6 +74,9 @@ class TextDisplayWidget(QTextEdit):
             case "right":
                 self.moveCursor(QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.MoveAnchor)
                 
+            case "enter":
+                self.insertPlainText("\n")
+                
             case _:
                 self.insertPlainText(char)
     
