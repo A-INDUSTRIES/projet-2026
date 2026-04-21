@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QSc
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter
 from . import Page
-from . import MessagePage
+from . import MessagePage, NewMessagePage
 from app.modules.mail import MailManager
 from app.modules.messages import Message as M
 
@@ -36,6 +36,7 @@ class Messages(Page):
             widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
             widget.openView.connect(self.openMessage)
             widget.deleted.connect(lambda widget=widget: self.deleteContact(widget))
+            widget.respondView.connect(self.respondMessage)
             self.messagesLayout.addWidget(widget)
 
         self.layout.addWidget(self.title)
@@ -51,9 +52,14 @@ class Messages(Page):
     def openMessage(self, id, message):
         page = MessagePage(id, message)
         self.switch(page)
+    
+    def respondMessage(self, message):
+        page = NewMessagePage(subject=f"RE: {message.subject}", recepient=message.sender)
+        self.switch(page)
 
 class Message(QWidget):
     openView = Signal(int, M)
+    respondView = Signal(M)
     deleted = Signal()
 
     def __init__(self, id, message, *args, **kwargs):
@@ -72,6 +78,7 @@ class Message(QWidget):
 
         self.openButton.clicked.connect(self.open)
         self.deleteButton.clicked.connect(self.delete)
+        self.respondButton.clicked.connect(self.respond)
 
         self.info.addWidget(self.subject)
         self.info.addWidget(self.sender)
@@ -86,6 +93,9 @@ class Message(QWidget):
 
     def delete(self):
         self.deleted.emit()
+
+    def respond(self):
+        self.respondView.emit(self.message)
 
     def paintEvent(self, _):
         opt = QStyleOption()

@@ -3,12 +3,13 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from base64 import urlsafe_b64decode
+from email.message import EmailMessage
+from base64 import urlsafe_b64decode, urlsafe_b64encode
 from .utils import Singleton, getUserDataPath
 from .logger import debug
 from .messages import Message
 
-SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/gmail.readonly", "https://www.googleapis.com/auth/gmail.send"]
 
 class MailManager(metaclass=Singleton):
     def __init__(self):
@@ -27,8 +28,24 @@ class MailManager(metaclass=Singleton):
         with open(path, "w") as token:
             token.write(self.creds.to_json())
 
-    def send(self, email, subject, message):
-        pass
+    def send(self, email, subject, content):
+        if not self.creds:
+            self.login()
+
+        service = build("gmail", "v1", credentials=self.creds)
+
+        message = EmailMessage()
+
+        message.set_content(content)
+        message["To"] = email
+        message["Subject"] = subject
+
+        encoded = urlsafe_b64encode(message.as_bytes()).decode()
+
+        create_message = {"raw": encoded}
+
+        send = service.users().messages().send(userId="me", body=create_message).execute()
+        debug(send)
 
     def receive(self):
         if not self.creds:

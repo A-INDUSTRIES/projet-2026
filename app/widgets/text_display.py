@@ -4,8 +4,8 @@ from PySide6.QtWidgets import QTextEdit, QScrollBar
 from app.modules.logger import warn
 
 class TextDisplayWidget(QTextEdit):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         
         self.setPlaceholderText("Ecrivez quelque chose")
         self.setTextCursor(self.textCursor())

@@ -6,6 +6,7 @@ from ..widgets.text_display import TextDisplayWidget
 from . import Page
 from app.modules.tts import VoiceEngine
 from pathlib import Path
+from . import NewMessagePage
 
 class Keyboard(Page):
     def __init__(self, *args):
@@ -42,6 +43,7 @@ class Keyboard(Page):
         self.mail = QPushButton("Envoyer\npar mail")
         self.mail.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.MinimumExpanding)
         self.layout.addWidget(self.mail, 1, 9, 1, 1)
+        self.mail.clicked.connect(self.sendMail)
         
         # Images pour les boutons de scroll
         imgPath = (Path(__file__).parent.parent / "assets" / "chevron-up.png").as_posix()
@@ -74,3 +76,7 @@ class Keyboard(Page):
 
     def textToSpeech(self):
         VoiceEngine().read(self.textDisplay.toPlainText())
+
+    def sendMail(self):
+        page = NewMessagePage(content=self.textDisplay.toPlainText())
+        self.switch(page)
