@@ -31,6 +31,7 @@ class MessagePage(Page):
 
         # Connection des events
         self.homeButton.clicked.connect(lambda _: self.switch("messages"))
+        self.respondButton.clicked.connect(self.respond)
 
         self.layout().addWidget(self.subject)
         self.layout().addWidget(self.sender)
@@ -40,6 +41,10 @@ class MessagePage(Page):
         self.bottomRow.addWidget(self.deleteButton)
         self.bottomRow.addStretch(1)
         self.layout().addLayout(self.bottomRow)
+
+    def respond(self):
+        page = NewMessagePage(subject=f"RE: {self.message.subject}", recepient=self.message.sender)
+        self.switch(page)
 
 class NewMessagePage(Page):
     def __init__(self, content="", subject="", recepient="",  *args, **kwargs):
