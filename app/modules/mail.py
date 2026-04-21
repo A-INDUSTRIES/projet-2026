@@ -3,13 +3,15 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from email.message import EmailMessage
+from email.mime.text import MIMEText
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 from .utils import Singleton, getUserDataPath
 from .logger import debug
 from .messages import Message
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly", "https://www.googleapis.com/auth/gmail.send"]
+
+SIGNATURE = "<font style=\"color:rgb(153,153,153)\"><br>Envoyé depuis CommuniquerAvecLesYeux.</font>"
 
 class MailManager(metaclass=Singleton):
     def __init__(self):
@@ -34,9 +36,9 @@ class MailManager(metaclass=Singleton):
 
         service = build("gmail", "v1", credentials=self.creds)
 
-        message = EmailMessage()
+        content = f"<p>{content.replace("\n", "<br>")}</p>{SIGNATURE}"
 
-        message.set_content(content)
+        message = MIMEText(content, "html")
         message["To"] = email
         message["Subject"] = subject
 
