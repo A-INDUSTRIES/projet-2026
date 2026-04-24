@@ -23,6 +23,5 @@ pyinstaller -n communiquer_avec_les_yeux \
     --collect-all kokoro \
     --collect-all phonemizer \
     --hidden-import charset_normalizer \
-    --add-data app/assets:. \
     -F main.py
 echo "Done!"

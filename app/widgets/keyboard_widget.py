@@ -26,10 +26,8 @@ class KeyboardWidget(QWidget):
         self.specialCharactersToggled = False
         
         # Récupération des icones à display sur le bouton shift        
-        imgPath = (Path(__file__).parent.parent / "assets" / "shift_off.png").as_posix()    
-        self.shiftOFF = QIcon(imgPath)
-        imgPath = (Path(__file__).parent.parent / "assets" / "shift_on.png").as_posix()
-        self.shiftON = QIcon(imgPath)
+        self.shiftOFF = QIcon(":/icons/shift_off")
+        self.shiftON = QIcon(":/icons/shift_on")
                 
         # Grandes lignes principales du clavier : 10 x 4
         self.firstLine = list("1234567890")

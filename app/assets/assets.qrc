@@ -1,0 +1,9 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="icons">
+        <file alias="chevron-up">chevron-up.png</file>
+        <file alias="chevron-down">chevron-down.png</file>
+        <file alias="shift_on">shift_on.png</file>
+        <file alias="shift_off">shift_off.png</file>
+    </qresource>
+</RCC>

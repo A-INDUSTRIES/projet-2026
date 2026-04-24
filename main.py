@@ -3,6 +3,7 @@ from app.app import MainWindow
 from app.modules.logger import setLogLevel, debug
 from ctypes.util import find_library
 import os
+import app.modules.assets
 
 if __name__ == "__main__":
     setLogLevel("debug")

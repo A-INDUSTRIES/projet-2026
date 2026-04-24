@@ -46,11 +46,8 @@ class Keyboard(Page):
         self.mail.clicked.connect(self.sendMail)
         
         # Images pour les boutons de scroll
-        imgPath = (Path(__file__).parent.parent / "assets" / "chevron-up.png").as_posix()
-        print(imgPath)
-        self.up = QIcon(imgPath)
-        imgPath = (Path(__file__).parent.parent / "assets" / "chevron-down.png").as_posix()
-        self.down = QIcon(imgPath)
+        self.up = QIcon(":/icons/chevron-up")
+        self.down = QIcon(":/icons/chevron-down")
         
         # Scroll vers le haut
         self.scrollUp = QPushButton()
