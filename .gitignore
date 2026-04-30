@@ -14,3 +14,6 @@ app/modules/voice_model
 
 # App credentials
 credentials.json
+
+# Assests python file
+**/assets_rc.py
