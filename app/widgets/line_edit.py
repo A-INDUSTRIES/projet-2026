@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QTextEdit
-from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPainter, QColor, QTextCursor
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtWidgets import QTextEdit
 
 class LineEdit(QTextEdit):
     def __init__(self, *args, **kwargs):

@@ -3,7 +3,6 @@ from google.auth.credentials import TokenState
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 from email.mime.text import MIMEText
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 from .utils import Singleton, getUserDataPath

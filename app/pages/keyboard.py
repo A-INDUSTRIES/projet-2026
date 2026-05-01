@@ -1,12 +1,9 @@
 from PySide6.QtWidgets import QGridLayout, QPushButton, QSizePolicy
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import QSize
-from ..widgets.keyboard_widget import KeyboardWidget
-from ..widgets.text_display import TextDisplayWidget
-from . import Page
-from app.modules.tts import VoiceEngine
-from pathlib import Path
-from . import NewMessagePage
+from ..widgets import KeyboardWidget, TextDisplayWidget
+from ..modules.tts import VoiceEngine
+from . import NewMessagePage, Page
 
 class Keyboard(Page):
     def __init__(self, *args):

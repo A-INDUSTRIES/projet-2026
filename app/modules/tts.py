@@ -4,8 +4,8 @@ from zipfile import ZipFile
 from io import BytesIO
 from threading import Thread
 from queue import Queue
-from .logger import *
 from .utils import Singleton, getUserDataPath
+from .logger import *
 
 MODEL_PATH = getUserDataPath() / "voice_model"
 MODEL_URL = "https://cloud.aindustries.be/public.php/dav/files/Paik9imyoMJjsLK/?accept=zip"

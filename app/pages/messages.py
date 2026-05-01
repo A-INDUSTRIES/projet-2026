@@ -1,11 +1,10 @@
 from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QScrollArea, QSizePolicy, QStyleOption, QStyle
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter
-from . import Page
-from . import MessagePage, NewMessagePage
-from app.modules.mail import MailManager
-from app.modules.messages import Message as M
+from ..modules.mail import MailManager
+from ..modules.messages import Message as M
 from ..widgets import Widget
+from . import MessagePage, NewMessagePage, Page
 
 class Messages(Page):
     def __init__(self, *args):

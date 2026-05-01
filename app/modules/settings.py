@@ -1,6 +1,6 @@
 import json
-from .logger import warn
 from .utils import getUserDataPath, Singleton
+from .logger import warn
 
 def getSettingsPath():
     return getUserDataPath() / "settings.json"

@@ -1,8 +1,8 @@
-from PySide6.QtWidgets import QPushButton, QLabel, QHBoxLayout, QVBoxLayout, QStyleOption, QStyle, QSizePolicy
+from PySide6.QtWidgets import QPushButton, QLabel, QHBoxLayout, QVBoxLayout, QStyleOption, QStyle
 from PySide6.QtGui import QPainter
 from ..modules.settings import SettingsManager
-from . import Page
 from ..widgets import Widget
+from . import Page
 
 class Settings(Page):
     def __init__(self, *args):

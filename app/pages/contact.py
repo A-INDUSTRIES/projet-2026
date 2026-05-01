@@ -1,11 +1,11 @@
-from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QGridLayout, QSizePolicy
+from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QGridLayout
 from PySide6.QtCore import Signal
-from . import Page
-from app.modules.logger import debug
-from app.modules.contacts import ContactsManager, Contact
-from app.widgets.line_edit import LineEdit
-from app.widgets.keyboard_widget import KeyboardWidget
+from ..modules.contacts import ContactsManager, Contact
+from ..widgets.keyboard_widget import KeyboardWidget
+from ..widgets.line_edit import LineEdit
+from ..modules.logger import debug
 from ..widgets import Widget
+from . import Page
 
 class ContactPage(Page):
     def __init__(self, *args, id=None, name="", email="", **kwargs):

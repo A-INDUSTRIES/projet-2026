@@ -1,11 +1,9 @@
-from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QStyle, QStyleOption, QVBoxLayout
 from PySide6.QtCore import Signal, Qt
-from app.modules.contacts import Contact as C
-from app.modules.contacts import ContactsManager
-from . import Page
-from . import ContactPage
+from PySide6.QtGui import QPainter
+from ..modules.contacts import ContactsManager, Contact as C
 from ..widgets import Widget
+from . import ContactPage, Page
 
 class Contacts(Page):
     def __init__(self, *args):

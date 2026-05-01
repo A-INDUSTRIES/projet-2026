@@ -1,12 +1,7 @@
-from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QLineEdit, QTextEdit, QSizePolicy, QGridLayout
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QTextEdit, QSizePolicy, QGridLayout
+from ..widgets import LineEdit, TextDisplayWidget, KeyboardWidget
+from ..modules.mail import MailManager
 from . import Page
-from app.modules.logger import debug
-from app.modules.messages import Message
-from app.widgets.line_edit import LineEdit
-from app.widgets.text_display import TextDisplayWidget
-from app.widgets.keyboard_widget import KeyboardWidget
-from app.modules.mail import MailManager
 
 class MessagePage(Page):
     def __init__(self, id, message, *args, **kwargs):

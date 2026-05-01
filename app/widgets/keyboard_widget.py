@@ -1,13 +1,8 @@
-from pathlib import Path
-
+from PySide6.QtWidgets import QGridLayout, QPushButton, QSizePolicy
 from PySide6.QtCore import QSize, Signal
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QGridLayout, QPushButton, QSizePolicy
-
 from ..modules.logger import *
-from ..modules.tts import VoiceEngine
-from .button import Button
-from . import Widget
+from . import Button, Widget
 
 
 class KeyboardWidget(Widget):    
