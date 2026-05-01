@@ -1,4 +1,5 @@
 from google.auth.transport.requests import Request
+from google.auth.credentials import TokenState
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
@@ -19,8 +20,13 @@ class MailManager(metaclass=Singleton):
         path = getUserDataPath() / "token.json"
         if path.exists():
             self.creds = Credentials.from_authorized_user_file(path, SCOPES)
-            if not self.creds.valid:
-                self.creds.refresh(Request())
+            match self.creds.token_state:
+                case TokenState.STALE:
+                    self.creds.refresh(Request())
+                case TokenState.INVALID:
+                    self.login()
+                case _:
+                    pass
 
     def login(self):
         path = getUserDataPath() / "token.json"
