@@ -1,7 +1,8 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QSizePolicy, QVBoxLayout, QLabel
+from PySide6.QtWidgets import QPushButton, QSizePolicy, QVBoxLayout, QLabel
 from PySide6.QtCore import Qt, QSize, Signal
 from PySide6.QtGui import QIcon
 from pathlib import Path
+from . import Widget
 
 class Button(QPushButton):
     onclick = Signal(str)

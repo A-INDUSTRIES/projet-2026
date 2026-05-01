@@ -1,10 +1,11 @@
 from PySide6.QtGui import QPainter
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QStyle, QStyleOption, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QStyle, QStyleOption, QVBoxLayout
 from PySide6.QtCore import Signal, Qt
 from app.modules.contacts import Contact as C
 from app.modules.contacts import ContactsManager
 from . import Page
 from . import ContactPage
+from ..widgets import Widget
 
 class Contacts(Page):
     def __init__(self, *args):
@@ -18,7 +19,7 @@ class Contacts(Page):
         self.homeButton = QPushButton("menu") # A changer pour une icone
         self.bottomRow = QHBoxLayout()
         self.contacts = QScrollArea()
-        self.contactsContent = QWidget()
+        self.contactsContent = Widget()
         self.contactsLayout = QVBoxLayout(self.contactsContent)
         self.createContactButton = QPushButton("Ajouter un contact")
 
@@ -59,7 +60,7 @@ class Contacts(Page):
         self.contactsLayout.removeWidget(widget)
         widget.deleteLater()
 
-class Contact(QWidget):
+class Contact(Widget):
     openEdit = Signal(int, C)
     deleted = Signal()
 

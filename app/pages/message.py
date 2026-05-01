@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QWidget, QHBoxLayout, QLineEdit, QTextEdit, QSizePolicy, QGridLayout
+from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QLineEdit, QTextEdit, QSizePolicy, QGridLayout
 from PySide6.QtCore import Qt, Signal
 from . import Page
 from app.modules.logger import debug

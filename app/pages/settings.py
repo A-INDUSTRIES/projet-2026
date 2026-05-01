@@ -1,7 +1,8 @@
-from PySide6.QtWidgets import QWidget, QPushButton, QLabel, QHBoxLayout, QVBoxLayout, QStyleOption, QStyle, QSizePolicy
+from PySide6.QtWidgets import QPushButton, QLabel, QHBoxLayout, QVBoxLayout, QStyleOption, QStyle, QSizePolicy
 from PySide6.QtGui import QPainter
 from ..modules.settings import SettingsManager
 from . import Page
+from ..widgets import Widget
 
 class Settings(Page):
     def __init__(self, *args):
@@ -29,7 +30,7 @@ class Settings(Page):
     def updateStyle(self):
         self.parent().updateStyle()
 
-class Setting(QWidget):
+class Setting(Widget):
     def __init__(self, name, description, options, values):
         super().__init__()
         self.name = name

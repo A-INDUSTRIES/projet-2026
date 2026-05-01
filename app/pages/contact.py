@@ -1,10 +1,11 @@
-from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QWidget, QHBoxLayout, QGridLayout, QSizePolicy
+from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QGridLayout, QSizePolicy
 from PySide6.QtCore import Signal
 from . import Page
 from app.modules.logger import debug
 from app.modules.contacts import ContactsManager, Contact
 from app.widgets.line_edit import LineEdit
 from app.widgets.keyboard_widget import KeyboardWidget
+from ..widgets import Widget
 
 class ContactPage(Page):
     def __init__(self, *args, id=None, name="", email="", **kwargs):
@@ -64,7 +65,7 @@ class ContactPage(Page):
     def setEmail(self, text):
         self.email = text
 
-class Value(QWidget):
+class Value(Widget):
     valueChanged = Signal(str)
 
     def __init__(self, name, value, placeholder):

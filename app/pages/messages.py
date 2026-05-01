@@ -1,10 +1,11 @@
-from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QScrollArea, QWidget, QSizePolicy, QStyleOption, QStyle
+from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QScrollArea, QSizePolicy, QStyleOption, QStyle
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter
 from . import Page
 from . import MessagePage, NewMessagePage
 from app.modules.mail import MailManager
 from app.modules.messages import Message as M
+from ..widgets import Widget
 
 class Messages(Page):
     def __init__(self, *args):
@@ -18,7 +19,7 @@ class Messages(Page):
         self.homeButton = QPushButton("menu") # A changer pour une icone
         self.bottomRow = QHBoxLayout()
         self.messages = QScrollArea()
-        self.messagesContent = QWidget()
+        self.messagesContent = Widget()
         self.messagesLayout = QVBoxLayout(self.messagesContent)
 
         self.title.setObjectName("title")
@@ -57,7 +58,7 @@ class Messages(Page):
         page = NewMessagePage(subject=f"RE: {message.subject}", recepient=message.sender)
         self.switch(page)
 
-class Message(QWidget):
+class Message(Widget):
     openView = Signal(int, M)
     respondView = Signal(M)
     deleted = Signal()

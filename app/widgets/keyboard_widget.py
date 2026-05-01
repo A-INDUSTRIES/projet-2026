@@ -2,14 +2,15 @@ from pathlib import Path
 
 from PySide6.QtCore import QSize, Signal
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QGridLayout, QPushButton, QSizePolicy, QWidget
+from PySide6.QtWidgets import QGridLayout, QPushButton, QSizePolicy
 
 from ..modules.logger import *
 from ..modules.tts import VoiceEngine
 from .button import Button
+from . import Widget
 
 
-class KeyboardWidget(QWidget):    
+class KeyboardWidget(Widget):    
     textUpdated = Signal(str)
     
     def __init__(self):
