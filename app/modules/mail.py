@@ -65,7 +65,7 @@ class MailManager(metaclass=Singleton):
 
         raw_messages = results.get("messages", [])
 
-        batch = service.new_batch_http_request(callback=lambda req_id, msg, err: self.messages.append(Message.from_raw(msg)))
+        batch = service.new_batch_http_request(callback=self.parse_message)
 
         ids = map(Message.id, self.messages)
 
@@ -77,6 +77,11 @@ class MailManager(metaclass=Singleton):
 
         batch.execute()
         return self.messages
+    
+    def parse_message(self, req_id, msg, err):
+        if err is not None:
+            debug(f"Error for req {req_id} : {err}")
+        self.messages.append(Message.from_raw(msg))
 
 if __name__ == "__main__":
     mail = MailManager()
