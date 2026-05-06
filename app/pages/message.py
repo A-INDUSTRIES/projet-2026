@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QTextEdit, QSizePolicy, QGridLayout
+from PySide6.QtWebEngineWidgets import QWebEngineView
 from ..widgets import LineEdit, TextDisplayWidget, KeyboardWidget
 from ..modules.mail import MailManager
 from . import Page
@@ -16,13 +17,14 @@ class MessagePage(Page):
         # Instanciation des widgets
         self.subject = QLabel(message.subject)
         self.sender = QLabel(message.sender)
-        self.content = QTextEdit(html=message.content)
+        self.content = QWebEngineView()
         self.homeButton = QPushButton("retour") # A changer pour une icone
         self.respondButton = QPushButton("répondre")
         self.deleteButton = QPushButton("supprimer")
 
-        self.content.setReadOnly(True)
+        #self.content.setReadOnly(True)
         self.content.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.content.setHtml(message.content)
 
         # Connection des events
         self.homeButton.clicked.connect(lambda _: self.switch("messages"))
