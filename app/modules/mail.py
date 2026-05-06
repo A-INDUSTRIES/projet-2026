@@ -81,6 +81,7 @@ class MailManager(metaclass=Singleton):
     def parse_message(self, req_id, msg, err):
         if err is not None:
             debug(f"Error for req {req_id} : {err}")
+            return
         self.messages.append(Message.from_raw(msg))
 
 if __name__ == "__main__":
