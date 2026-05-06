@@ -4,7 +4,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from email.mime.text import MIMEText
-from base64 import urlsafe_b64decode, urlsafe_b64encode
+from base64 import urlsafe_b64encode
 from .utils import Singleton, getUserDataPath
 from .logger import debug
 from .messages import Message
@@ -16,6 +16,7 @@ SIGNATURE = "<font style=\"color:rgb(153,153,153)\"><br>Envoyé depuis Communiqu
 class MailManager(metaclass=Singleton):
     def __init__(self):
         self.creds = None
+        self.messages = []
         path = getUserDataPath() / "token.json"
         if path.exists():
             self.creds = Credentials.from_authorized_user_file(path, SCOPES)
@@ -64,29 +65,18 @@ class MailManager(metaclass=Singleton):
 
         raw_messages = results.get("messages", [])
 
-        messages = []
+        batch = service.new_batch_http_request(callback=lambda req_id, msg, err: self.messages.append(Message.from_raw(msg)))
+
+        ids = map(Message.id, self.messages)
 
         for message in raw_messages:
-            debug(f'Message ID: {message["id"]}')
-            msg = (
-                service.users().messages().get(userId="me", id=message["id"], format='full').execute()
-            )
-            content = ""
-            payload = msg['payload']
-            if "text/html" in payload['mimeType']:
-                content = urlsafe_b64decode(payload['body']['data']).decode()
-            elif "multipart" in payload['mimeType']:
-                for part in payload['parts']:
-                    if "text/html" in part['mimeType']:
-                        content += urlsafe_b64decode(part['body']['data']).decode()
-            for header in payload['headers']:
-                if header['name'] == "Subject":
-                    subject = header["value"]
-                if header['name'] == 'From':
-                    sender = header["value"]
-            messages.append(Message(sender, subject, content))
+            if message["id"] in ids:
+                debug(f'Id skipped: {message["id"]}')
+                continue
+            batch.add(service.users().messages().get(userId="me", id=message["id"], format='full'))
 
-        return messages
+        batch.execute()
+        return self.messages
 
 if __name__ == "__main__":
     mail = MailManager()
