@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QScrollArea, QSizePolicy, QStyleOption, QStyle
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QThread, Slot
 from PySide6.QtGui import QPainter
 from ..modules.mail import MailManager
 from ..modules.messages import Message as M
@@ -31,19 +31,24 @@ class Messages(Page):
         # Connection des events
         self.homeButton.clicked.connect(lambda _: self.switch("menu"))
 
-        for id, message in enumerate(MailManager().receive()):
+        self.layout.addWidget(self.title)
+        self.layout.addWidget(self.messages)
+        self.bottomRow.addWidget(self.homeButton)
+        self.bottomRow.addStretch(1)
+        self.layout.addLayout(self.bottomRow)
+
+        self.loader = Worker()
+        self.loader.loaded.connect(self.loadMessages)
+        self.loader.start()
+
+    def loadMessages(self, messages):
+        for id, message in enumerate(messages):
             widget = Message(id, message)
             widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
             widget.openView.connect(self.openMessage)
             widget.deleted.connect(lambda widget=widget: self.deleteContact(widget))
             widget.respondView.connect(self.respondMessage)
             self.messagesLayout.addWidget(widget)
-
-        self.layout.addWidget(self.title)
-        self.layout.addWidget(self.messages)
-        self.bottomRow.addWidget(self.homeButton)
-        self.bottomRow.addStretch(1)
-        self.layout.addLayout(self.bottomRow)
 
     def deleteMail(self, widget):
         self.messagesLayout.removeWidget(widget)
@@ -102,3 +107,11 @@ class Message(Widget):
         opt.initFrom(self)
         p = QPainter(self)
         self.style().drawPrimitive(QStyle.PrimitiveElement.PE_Widget, opt, p, self)
+
+class Worker(QThread):
+    loaded = Signal(list)
+
+    @Slot()
+    def run(self):
+        result = MailManager().receive()
+        self.loaded.emit(result)
