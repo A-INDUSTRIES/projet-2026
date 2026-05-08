@@ -1,10 +1,10 @@
-from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QGridLayout
+from PySide6.QtWidgets import QLabel, QWidget
 from PySide6.QtCore import Signal
 from ..modules.contacts import ContactsManager, Contact
 from ..widgets.keyboard_widget import KeyboardWidget
 from ..widgets.line_edit import LineEdit
 from ..modules.logger import debug
-from ..widgets import Widget
+from ..widgets import EyeWidget, VBoxLayout, PushButton, HBoxLayout, GridLayout
 from . import Page
 
 class ContactPage(Page):
@@ -17,16 +17,16 @@ class ContactPage(Page):
         self.email = email
 
         # Instanciation du layout
-        self.grid = QGridLayout(self)
-        self.vbox = QVBoxLayout()
-        self.bottomRow = QHBoxLayout()
+        self.grid = GridLayout(self)
+        self.vbox = VBoxLayout()
+        self.bottomRow = HBoxLayout()
 
         # Instanciation des widgets 
-        self.homeButton = QPushButton("retour") # A changer pour une icone
+        self.homeButton = PushButton("retour") # A changer pour une icone
         self.title = QLabel("Contact")
         self.nameEdit = Value("Nom", name, "Ecrivez un nom")
         self.emailEdit = Value("Email", email, "Ecrivez une adresse mail")
-        self.saveButton = QPushButton("sauvegarder")
+        self.saveButton = PushButton("sauvegarder")
         self.keyboard = KeyboardWidget()
 
         self.title.setObjectName("title")
@@ -65,19 +65,19 @@ class ContactPage(Page):
     def setEmail(self, text):
         self.email = text
 
-class Value(Widget):
+class Value(QWidget, EyeWidget):
     valueChanged = Signal(str)
 
     def __init__(self, name, value, placeholder):
         super().__init__()
         self.editing = False
 
-        self.setLayout(QHBoxLayout(self))
+        self.setLayout(HBoxLayout(self))
 
-        self.vbox = QVBoxLayout()
+        self.vbox = VBoxLayout()
         self.nameLabel = QLabel(name)
         self.valueLabel = LineEdit(value)
-        self.editButton = QPushButton("modifier")
+        self.editButton = PushButton("modifier")
 
         self.valueLabel.setPlaceholderText(placeholder)
         self.valueLabel.textChanged.connect(self.valueChange)

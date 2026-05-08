@@ -1,7 +1,7 @@
-from PySide6.QtWidgets import QPushButton, QLabel, QHBoxLayout, QVBoxLayout, QStyleOption, QStyle
-from PySide6.QtGui import QPainter
+from PySide6.QtWidgets import QLabel, QStyleOption, QStyle, QWidget
+from PySide6.QtGui import Painter
 from ..modules.settings import SettingsManager
-from ..widgets import Widget
+from ..widgets import EyeWidget, PushButton, HBoxLayout, VBoxLayout
 from . import Page
 
 class Settings(Page):
@@ -9,13 +9,13 @@ class Settings(Page):
         super().__init__(*args)
 
         # Instanciation du layout
-        self.layout = QVBoxLayout(self)
+        self.layout = VBoxLayout(self)
 
         # Instanciation des widgets
-        self.homeButton = QPushButton("menu") # A changer pour une icone
-        self.calibrate = QPushButton("Recalibrer le tracking")
+        self.homeButton = PushButton("menu") # A changer pour une icone
+        self.calibrate = PushButton("Recalibrer le tracking")
         self.voiceChoice = Setting("fontSize", "Taille de la police d'écriture", ["Très petite", "Petite", "Normale", "Grande", "Très grande"], [10, 18, 24, 32, 40])
-        self.bottomRow = QHBoxLayout()
+        self.bottomRow = HBoxLayout()
 
         # Connection des events
         self.homeButton.clicked.connect(lambda _event: self.switch("menu"))
@@ -30,13 +30,13 @@ class Settings(Page):
     def updateStyle(self):
         self.parent().updateStyle()
 
-class Setting(Widget):
+class Setting(QWidget, EyeWidget):
     def __init__(self, name, description, options, values):
         super().__init__()
         self.name = name
         self.values = values
 
-        self.layout = QHBoxLayout(self)
+        self.layout = HBoxLayout(self)
 
         self.description = QLabel(description)
 
@@ -45,7 +45,7 @@ class Setting(Widget):
 
         self.buttons = []
         for i, option in enumerate(options):
-            button = QPushButton(option)
+            button = PushButton(option)
             button.clicked.connect(lambda _event, value=values[i]: self.setValue(value))
             self.layout.addWidget(button)
             self.buttons.append(button)
@@ -69,5 +69,5 @@ class Setting(Widget):
     def paintEvent(self, _):
         opt = QStyleOption()
         opt.initFrom(self)
-        p = QPainter(self)
+        p = Painter(self)
         self.style().drawPrimitive(QStyle.PrimitiveElement.PE_Widget, opt, p, self)

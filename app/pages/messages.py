@@ -1,9 +1,9 @@
-from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QScrollArea, QSizePolicy, QStyleOption, QStyle
+from PySide6.QtWidgets import QLabel, QScrollArea, QSizePolicy, QStyleOption, QStyle, QWidget
 from PySide6.QtCore import Qt, Signal, QThread, Slot
 from PySide6.QtGui import QPainter
 from ..modules.mail import MailManager
 from ..modules.messages import Message as M
-from ..widgets import Widget
+from ..widgets import EyeWidget, VBoxLayout, HBoxLayout, PushButton
 from . import MessagePage, NewMessagePage, Page
 
 class Messages(Page):
@@ -11,15 +11,15 @@ class Messages(Page):
         super().__init__(*args)
 
         # Instanciation du layout
-        self.layout = QVBoxLayout(self)
+        self.layout = VBoxLayout(self)
 
         # Instanciation des widgets
         self.title = QLabel("Messages")
-        self.homeButton = QPushButton("menu") # A changer pour une icone
-        self.bottomRow = QHBoxLayout()
+        self.homeButton = PushButton("menu") # A changer pour une icone
+        self.bottomRow = HBoxLayout()
         self.messages = QScrollArea()
-        self.messagesContent = Widget()
-        self.messagesLayout = QVBoxLayout(self.messagesContent)
+        self.messagesContent = QWidget()
+        self.messagesLayout = VBoxLayout(self.messagesContent)
 
         self.title.setObjectName("title")
         self.messagesContent.setObjectName("messages")
@@ -62,7 +62,7 @@ class Messages(Page):
         page = NewMessagePage(subject=f"RE: {message.subject}", recepient=message.sender)
         self.switch(page)
 
-class Message(Widget):
+class Message(QWidget, EyeWidget):
     openView = Signal(int, M)
     respondView = Signal(M)
     deleted = Signal()
@@ -74,12 +74,12 @@ class Message(Widget):
 
         self.subject = QLabel(message.subject)
         self.sender = QLabel(f"de: {message.sender}")
-        self.openButton = QPushButton("lire")
-        self.respondButton = QPushButton("répondre")
-        self.deleteButton = QPushButton("supprimer")
+        self.openButton = PushButton("lire")
+        self.respondButton = PushButton("répondre")
+        self.deleteButton = PushButton("supprimer")
 
-        self.layout = QHBoxLayout(self)
-        self.info = QVBoxLayout()
+        self.layout = HBoxLayout(self)
+        self.info = VBoxLayout()
 
         self.openButton.clicked.connect(self.open)
         self.deleteButton.clicked.connect(self.delete)

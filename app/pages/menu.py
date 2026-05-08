@@ -1,4 +1,5 @@
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QPushButton, QSizePolicy
+from PySide6.QtWidgets import QSizePolicy
+from ..widgets import PushButton, HBoxLayout, VBoxLayout
 from . import Page
 
 class Menu(Page):
@@ -6,15 +7,15 @@ class Menu(Page):
         super().__init__(*args)
 
         # Instanciation du layout du menu
-        self.layout = QVBoxLayout(self)
-        self.buttons = QHBoxLayout()
+        self.vlayout = VBoxLayout(self)
+        self.buttons = HBoxLayout()
 
         # Instanciation des boutons 
-        self.keyboardButton = QPushButton("Clavier")
-        self.messagesButton = QPushButton("Messages")
-        self.contactsButton = QPushButton("Contacts")
-        self.settingsButton = QPushButton("Paramètres")
-        self.exitButton     = QPushButton("Quitter l'application")
+        self.keyboardButton = PushButton("Clavier")
+        self.messagesButton = PushButton("Messages")
+        self.contactsButton = PushButton("Contacts")
+        self.settingsButton = PushButton("Paramètres")
+        self.exitButton = PushButton("Quitter l'application")
 
         # Connection des events
         self.keyboardButton.clicked.connect(lambda _event: self.switch("keyboard"))
@@ -37,6 +38,6 @@ class Menu(Page):
         self.buttons.addWidget(self.settingsButton)
         self.buttons.addWidget(self.exitButton)
 
-        self.layout.addStretch(1)
-        self.layout.addLayout(self.buttons, 1)
-        self.layout.addStretch(1)
+        self.vlayout.addStretch(1)
+        self.vlayout.addLayout(self.buttons, 1)
+        self.vlayout.addStretch(1)

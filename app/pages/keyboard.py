@@ -1,7 +1,7 @@
-from PySide6.QtWidgets import QGridLayout, QPushButton, QSizePolicy
+from PySide6.QtWidgets import QSizePolicy
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import QSize
-from ..widgets import KeyboardWidget, TextDisplayWidget
+from ..widgets import KeyboardWidget, TextDisplayWidget, GridLayout, PushButton
 from ..modules.tts import VoiceEngine
 from . import NewMessagePage, Page
 
@@ -10,7 +10,7 @@ class Keyboard(Page):
         super().__init__(*args)
 
         # Instanciation du layout
-        self.layout = QGridLayout(self)
+        self.layout = GridLayout(self)
         self.layout.setRowStretch(0, 1)
         self.layout.setRowStretch(1, 1)
         self.layout.setRowStretch(2, 4)
@@ -31,13 +31,13 @@ class Keyboard(Page):
         
         # Boutons supplémentaires : Text-to-Speech, Envoi par mail, scroll le text (haut / bas)
         # TTS
-        self.tts = QPushButton("Text to\nSpeech")
+        self.tts = PushButton("Text to\nSpeech")
         self.tts.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.MinimumExpanding)
         self.layout.addWidget(self.tts, 0, 9, 1, 1)
         self.tts.clicked.connect(self.textToSpeech)
         
         # Mail
-        self.mail = QPushButton("Envoyer\npar mail")
+        self.mail = PushButton("Envoyer\npar mail")
         self.mail.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.MinimumExpanding)
         self.layout.addWidget(self.mail, 1, 9, 1, 1)
         self.mail.clicked.connect(self.sendMail)
@@ -47,7 +47,7 @@ class Keyboard(Page):
         self.down = QIcon(":/icons/chevron-down")
         
         # Scroll vers le haut
-        self.scrollUp = QPushButton()
+        self.scrollUp = PushButton()
         self.scrollUp.setIcon(self.up)
         self.scrollUp.setIconSize(QSize(100, 100))
         self.scrollUp.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.MinimumExpanding)
@@ -55,7 +55,7 @@ class Keyboard(Page):
         self.layout.addWidget(self.scrollUp, 0, 8, 1, 1)
         
         # Scroll vers le bas
-        self.scrollDown = QPushButton()
+        self.scrollDown = PushButton()
         self.scrollDown.setIcon(self.down)
         self.scrollDown.setIconSize(QSize(100, 100))
         self.scrollDown.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.MinimumExpanding)

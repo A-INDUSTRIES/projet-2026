@@ -1,18 +1,18 @@
-from PySide6.QtWidgets import QGridLayout, QPushButton, QSizePolicy
+from PySide6.QtWidgets import QSizePolicy, QWidget
 from PySide6.QtCore import QSize, Signal
 from PySide6.QtGui import QIcon
 from ..modules.logger import *
-from . import Button, Widget
+from . import Button, EyeWidget, GridLayout, PushButton
 
 
-class KeyboardWidget(Widget):    
+class KeyboardWidget(QWidget, EyeWidget):    
     textUpdated = Signal(str)
     
     def __init__(self):
         super().__init__()
         
         # Initialisation du layout en grille
-        self.layout = QGridLayout(self)
+        self.layout = GridLayout(self)
         
         # Gestion des majuscules avec Caps Lock et Shift
         self.cpsLock = False
@@ -50,7 +50,7 @@ class KeyboardWidget(Widget):
 
         # Boutons spéciaux
         # Retour au menu
-        self.homeButton = QPushButton("menu") # A changer pour une icone
+        self.homeButton = PushButton("menu") # A changer pour une icone
         self.homeButton.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.homeButton.clicked.connect(lambda _event: self.parent().switch("menu"))
         self.layout.addWidget(self.homeButton, 4, 2, 1, 4)
@@ -62,31 +62,31 @@ class KeyboardWidget(Widget):
         self.layout.addWidget(self.space, 4, 6, 1, 10)
         
         # Back Space
-        self.backSpace = QPushButton("Back\nSpace")
+        self.backSpace = PushButton("Back\nSpace")
         self.backSpace.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.backSpace.clicked.connect(lambda _event: self.handleBackSpace())
         self.layout.addWidget(self.backSpace, 0, 22, 1, 2)
         
         # Touche Enter
-        self.enter = QPushButton("Enter")
+        self.enter = PushButton("Enter")
         self.enter.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.enter.clicked.connect(lambda _event: self.handleEnter())
         self.layout.addWidget(self.enter, 1, 22, 1, 2)
         
         # Bouton effacer tout le texte
-        self.eraseText = QPushButton("Effacer\ntout le\ntexte")
+        self.eraseText = PushButton("Effacer\ntout le\ntexte")
         self.eraseText.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.eraseText.clicked.connect(lambda _event: self.handleTextErasion())
         self.layout.addWidget(self.eraseText, 2, 22, 2, 2)
         
         # Flèche gauche
-        self.leftArrow = QPushButton("<")
+        self.leftArrow = PushButton("<")
         self.leftArrow.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.leftArrow.clicked.connect(lambda _event: self.handleLeftArrow())
         self.layout.addWidget(self.leftArrow, 4, 16, 1, 3)
         
         # Flèche droite
-        self.rightArrow = QPushButton(">")
+        self.rightArrow = PushButton(">")
         self.rightArrow.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.rightArrow.clicked.connect(lambda _event: self.handleRightArrow())
         self.layout.addWidget(self.rightArrow, 4, 19, 1, 3)
@@ -112,7 +112,7 @@ class KeyboardWidget(Widget):
         self.layout.addWidget(self.special, 4, 0, 1, 2)
         
         # Bouton Gaze Typing ON / OFF
-        self.gazeTyping = QPushButton(" Gaze\nTyping\nON/OFF")
+        self.gazeTyping = PushButton(" Gaze\nTyping\nON/OFF")
         self.gazeTyping.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.gazeTyping.clicked.connect(lambda _event: self.handleGazeTyping())
         self.layout.addWidget(self.gazeTyping, 0, 0, 2, 2)

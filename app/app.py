@@ -23,6 +23,8 @@ class MainWindow(QMainWindow):
 
         self.updateStyle()
 
+        self.setMouseTracking(True)
+
         # On montre la fenêtre quand elle est prête
         self.show()
 
@@ -67,3 +69,7 @@ class MainWindow(QMainWindow):
         stylesheet = stylesheet.replace("var(large)", f"{fontSize+12}px")
         stylesheet = stylesheet.replace("var(extra-large)", f"{fontSize+20}px")
         self.setStyleSheet(stylesheet)
+
+    def mouseMoveEvent(self, event):
+        self.centralWidget().eyeEvent(event.globalPosition().toPoint())
+        return super().mouseMoveEvent(event)

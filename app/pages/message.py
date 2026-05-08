@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QTextEdit, QSizePolicy, QGridLayout
+from PySide6.QtWidgets import QLabel, QSizePolicy
 from PySide6.QtWebEngineWidgets import QWebEngineView
-from ..widgets import LineEdit, TextDisplayWidget, KeyboardWidget
+from ..widgets import LineEdit, TextDisplayWidget, KeyboardWidget, VBoxLayout, PushButton, HBoxLayout, GridLayout
 from ..modules.mail import MailManager
 from . import Page
 
@@ -11,16 +11,16 @@ class MessagePage(Page):
         self.message = message
 
         # Instanciation du layout
-        self.setLayout(QVBoxLayout(self))
-        self.bottomRow = QHBoxLayout()
+        self.setLayout(VBoxLayout(self))
+        self.bottomRow = HBoxLayout()
 
         # Instanciation des widgets
         self.subject = QLabel(message.subject)
         self.sender = QLabel(message.sender)
         self.content = QWebEngineView()
-        self.homeButton = QPushButton("retour") # A changer pour une icone
-        self.respondButton = QPushButton("répondre")
-        self.deleteButton = QPushButton("supprimer")
+        self.homeButton = PushButton("retour") # A changer pour une icone
+        self.respondButton = PushButton("répondre")
+        self.deleteButton = PushButton("supprimer")
 
         #self.content.setReadOnly(True)
         self.content.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -47,17 +47,17 @@ class NewMessagePage(Page):
     def __init__(self, content="", subject="", recepient="",  *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Instanciation du layout
-        self.grid = QGridLayout(self)
-        self.vbox = QVBoxLayout()
-        self.bottomRow = QHBoxLayout()
+        self.grid = GridLayout(self)
+        self.vbox = VBoxLayout()
+        self.bottomRow = HBoxLayout()
 
         # Instanciation des widgets
         self.subject = LineEdit(placeholderText="Entrez un sujet", text=subject)
         self.subject.setPlaceholderText
         self.recepient = LineEdit(placeholderText="Entrez une adresse mail ou choisissez un contact", text=recepient)
         self.content = TextDisplayWidget(text=content)
-        self.homeButton = QPushButton("retour") # A changer pour une icone
-        self.sendButton = QPushButton("envoyer")
+        self.homeButton = PushButton("retour") # A changer pour une icone
+        self.sendButton = PushButton("envoyer")
         self.keyboard = KeyboardWidget()
 
         self.content.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)

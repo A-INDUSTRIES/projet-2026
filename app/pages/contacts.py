@@ -1,8 +1,8 @@
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QStyle, QStyleOption, QVBoxLayout
+from PySide6.QtWidgets import QLabel, QScrollArea, QSizePolicy, QStyle, QStyleOption, QWidget
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QPainter
 from ..modules.contacts import ContactsManager, Contact as C
-from ..widgets import Widget
+from ..widgets import EyeWidget, HBoxLayout, PushButton, VBoxLayout
 from . import ContactPage, Page
 
 class Contacts(Page):
@@ -10,16 +10,16 @@ class Contacts(Page):
         super().__init__(*args)
 
         # Instanciation du layout
-        self.layout = QVBoxLayout(self)
+        self.layout = VBoxLayout(self)
 
         # Instanciation des widgets
         self.title = QLabel("Contacts")
-        self.homeButton = QPushButton("menu") # A changer pour une icone
-        self.bottomRow = QHBoxLayout()
+        self.homeButton = PushButton("menu") # A changer pour une icone
+        self.bottomRow = HBoxLayout()
         self.contacts = QScrollArea()
-        self.contactsContent = Widget()
-        self.contactsLayout = QVBoxLayout(self.contactsContent)
-        self.createContactButton = QPushButton("Ajouter un contact")
+        self.contactsContent = QWidget()
+        self.contactsLayout = VBoxLayout(self.contactsContent)
+        self.createContactButton = PushButton("Ajouter un contact")
 
         self.title.setObjectName("title")
         self.contactsContent.setObjectName("contacts")
@@ -58,7 +58,7 @@ class Contacts(Page):
         self.contactsLayout.removeWidget(widget)
         widget.deleteLater()
 
-class Contact(Widget):
+class Contact(QWidget, EyeWidget):
     openEdit = Signal(int, C)
     deleted = Signal()
 
@@ -69,11 +69,11 @@ class Contact(Widget):
 
         self.name = QLabel(contact.name)
         self.email = QLabel(contact.email)
-        self.editButton = QPushButton("modifier")
-        self.deleteButton = QPushButton("supprimer")
+        self.editButton = PushButton("modifier")
+        self.deleteButton = PushButton("supprimer")
 
-        self.layout = QHBoxLayout(self)
-        self.info = QVBoxLayout()
+        self.layout = HBoxLayout(self)
+        self.info = VBoxLayout()
 
         self.editButton.clicked.connect(self.edit)
         self.deleteButton.clicked.connect(self.delete)

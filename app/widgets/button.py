@@ -1,7 +1,9 @@
 from PySide6.QtWidgets import QPushButton, QVBoxLayout, QLabel
 from PySide6.QtCore import Qt, Signal
+from typing import override
+from . import EyeWidget, EyeAction
 
-class Button(QPushButton):
+class Button(QPushButton, EyeWidget):
     onclick = Signal(str)
 
     def __init__(self, char:str, special:str | None=None, *args, **kwargs):
@@ -50,3 +52,9 @@ class Button(QPushButton):
             self.current = self.character
 
         self.label.setText(self.current)
+        
+    @override
+    def eyeEvent(self, position):
+        print("CLICK")
+        self.click()
+        return EyeAction.CLICK
