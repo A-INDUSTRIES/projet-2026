@@ -71,5 +71,5 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(stylesheet)
 
     def mouseMoveEvent(self, event):
-        self.centralWidget().eyeEvent(event.globalPosition().toPoint())
+        self.centralWidget().eyeEvent(event.scenePosition().toPoint())
         return super().mouseMoveEvent(event)

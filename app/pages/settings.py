@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QLabel, QStyleOption, QStyle, QWidget
-from PySide6.QtGui import Painter
+from PySide6.QtGui import QPainter
 from ..modules.settings import SettingsManager
 from ..widgets import EyeWidget, PushButton, HBoxLayout, VBoxLayout
 from . import Page
@@ -69,5 +69,5 @@ class Setting(QWidget, EyeWidget):
     def paintEvent(self, _):
         opt = QStyleOption()
         opt.initFrom(self)
-        p = Painter(self)
+        p = QPainter(self)
         self.style().drawPrimitive(QStyle.PrimitiveElement.PE_Widget, opt, p, self)

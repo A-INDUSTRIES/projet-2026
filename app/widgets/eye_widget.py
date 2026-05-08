@@ -8,11 +8,10 @@ class EyeAction(Enum):
 
 class EyeWidget():
     def eyeEvent(self, position: QPoint):
-        for object in self.children():
+        for i in range(self.layout().count()):
+            object = self.layout().itemAt(i)
             if isinstance(object, EyeWidget):
                 rect = object.geometry()
-                print(position, rect)
                 if rect.contains(position):
-                    print("contains")
                     return object.eyeEvent(position)
         return EyeAction.NONE

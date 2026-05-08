@@ -1,11 +1,37 @@
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QGridLayout
-from . import EyeWidget
+from PySide6.QtCore import QPoint
+from typing import override
+from . import EyeWidget, EyeAction
 
 class HBoxLayout(QHBoxLayout, EyeWidget):
-    pass
+    @override 
+    def eyeEvent(self, position: QPoint):
+        for i in range(self.count()):
+            object = self.itemAt(i).widget()
+            if isinstance(object, EyeWidget):
+                rect = object.geometry()
+                if rect.contains(position):
+                    return object.eyeEvent(position)
+        return EyeAction.NONE
 
 class VBoxLayout(QVBoxLayout, EyeWidget):
-    pass
+    @override 
+    def eyeEvent(self, position: QPoint):
+        for i in range(self.count()):
+            object = self.itemAt(i).widget()
+            if isinstance(object, EyeWidget):
+                rect = object.geometry()
+                if rect.contains(position):
+                    return object.eyeEvent(position)
+        return EyeAction.NONE
 
 class GridLayout(QGridLayout, EyeWidget):
-    pass
+    @override 
+    def eyeEvent(self, position: QPoint):
+        for i in range(self.count()):
+            object = self.itemAt(i).widget()
+            if isinstance(object, EyeWidget):
+                rect = object.geometry()
+                if rect.contains(position):
+                    return object.eyeEvent(position)
+        return EyeAction.NONE
