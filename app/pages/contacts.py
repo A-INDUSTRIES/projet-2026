@@ -1,8 +1,8 @@
-from PySide6.QtWidgets import QLabel, QScrollArea, QSizePolicy, QStyle, QStyleOption, QWidget
+from PySide6.QtWidgets import QLabel, QSizePolicy, QStyle, QStyleOption
 from PySide6.QtCore import Signal, Qt
-from PySide6.QtGui import QPainter
+from PySide6.QtGui import QPainter, QPen, QColor
 from ..modules.contacts import ContactsManager, Contact as C
-from ..widgets import EyeWidget, HBoxLayout, PushButton, VBoxLayout
+from ..widgets import EyeWidget, HBoxLayout, PushButton, VBoxLayout, ScrollArea, Widget
 from . import ContactPage, Page
 
 class Contacts(Page):
@@ -10,14 +10,14 @@ class Contacts(Page):
         super().__init__(*args)
 
         # Instanciation du layout
-        self.layout = VBoxLayout(self)
+        self.vlayout = VBoxLayout(self)
 
         # Instanciation des widgets
         self.title = QLabel("Contacts")
         self.homeButton = PushButton("menu") # A changer pour une icone
         self.bottomRow = HBoxLayout()
-        self.contacts = QScrollArea()
-        self.contactsContent = QWidget()
+        self.contacts = ScrollArea()
+        self.contactsContent = Widget()
         self.contactsLayout = VBoxLayout(self.contactsContent)
         self.createContactButton = PushButton("Ajouter un contact")
 
@@ -39,12 +39,12 @@ class Contacts(Page):
             widget.deleted.connect(lambda widget=widget: self.deleteContact(widget))
             self.contactsLayout.addWidget(widget)
 
-        self.layout.addWidget(self.title)
+        self.layout().addWidget(self.title)
         self.contactsLayout.addWidget(self.createContactButton)
-        self.layout.addWidget(self.contacts)
+        self.layout().addWidget(self.contacts)
         self.bottomRow.addWidget(self.homeButton)
         self.bottomRow.addStretch(1)
-        self.layout.addLayout(self.bottomRow)
+        self.layout().addLayout(self.bottomRow)
 
     def createContact(self):
         page = ContactPage(parent = self.parent())
@@ -58,7 +58,7 @@ class Contacts(Page):
         self.contactsLayout.removeWidget(widget)
         widget.deleteLater()
 
-class Contact(QWidget, EyeWidget):
+class Contact(Widget):
     openEdit = Signal(int, C)
     deleted = Signal()
 
@@ -72,7 +72,7 @@ class Contact(QWidget, EyeWidget):
         self.editButton = PushButton("modifier")
         self.deleteButton = PushButton("supprimer")
 
-        self.layout = HBoxLayout(self)
+        self.setLayout(HBoxLayout(self))
         self.info = VBoxLayout()
 
         self.editButton.clicked.connect(self.edit)
@@ -80,10 +80,10 @@ class Contact(QWidget, EyeWidget):
 
         self.info.addWidget(self.name)
         self.info.addWidget(self.email)
-        self.layout.addLayout(self.info)
-        self.layout.addStretch(1)
-        self.layout.addWidget(self.editButton)
-        self.layout.addWidget(self.deleteButton)
+        self.layout().addLayout(self.info)
+        self.layout().addStretch(1)
+        self.layout().addWidget(self.editButton)
+        self.layout().addWidget(self.deleteButton)
 
     def edit(self):
         self.openEdit.emit(self.id, self.contact)

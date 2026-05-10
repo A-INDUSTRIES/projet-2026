@@ -11,7 +11,7 @@ class Messages(Page):
         super().__init__(*args)
 
         # Instanciation du layout
-        self.layout = VBoxLayout(self)
+        self.setLayout(VBoxLayout(self))
 
         # Instanciation des widgets
         self.title = QLabel("Messages")
@@ -31,11 +31,11 @@ class Messages(Page):
         # Connection des events
         self.homeButton.clicked.connect(lambda _: self.switch("menu"))
 
-        self.layout.addWidget(self.title)
-        self.layout.addWidget(self.messages)
+        self.layout().addWidget(self.title)
+        self.layout().addWidget(self.messages)
         self.bottomRow.addWidget(self.homeButton)
         self.bottomRow.addStretch(1)
-        self.layout.addLayout(self.bottomRow)
+        self.layout().addLayout(self.bottomRow)
 
         self.loader = Worker()
         self.loader.loaded.connect(self.loadMessages)
@@ -78,7 +78,7 @@ class Message(QWidget, EyeWidget):
         self.respondButton = PushButton("répondre")
         self.deleteButton = PushButton("supprimer")
 
-        self.layout = HBoxLayout(self)
+        self.setLayout(HBoxLayout(self))
         self.info = VBoxLayout()
 
         self.openButton.clicked.connect(self.open)
@@ -87,11 +87,11 @@ class Message(QWidget, EyeWidget):
 
         self.info.addWidget(self.subject)
         self.info.addWidget(self.sender)
-        self.layout.addLayout(self.info)
-        self.layout.addStretch(1)
-        self.layout.addWidget(self.openButton)
-        self.layout.addWidget(self.respondButton)
-        self.layout.addWidget(self.deleteButton)
+        self.layout().addLayout(self.info)
+        self.layout().addStretch(1)
+        self.layout().addWidget(self.openButton)
+        self.layout().addWidget(self.respondButton)
+        self.layout().addWidget(self.deleteButton)
 
     def open(self):
         self.openView.emit(self.id, self.message)

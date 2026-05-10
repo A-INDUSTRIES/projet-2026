@@ -10,21 +10,21 @@ class Keyboard(Page):
         super().__init__(*args)
 
         # Instanciation du layout
-        self.layout = GridLayout(self)
-        self.layout.setRowStretch(0, 1)
-        self.layout.setRowStretch(1, 1)
-        self.layout.setRowStretch(2, 4)
+        self.setLayout(GridLayout(self))
+        self.layout().setRowStretch(0, 1)
+        self.layout().setRowStretch(1, 1)
+        self.layout().setRowStretch(2, 4)
         
         # Instanciation du widget d'affichage du texte
         self.textDisplay = TextDisplayWidget()
         self.textDisplay.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.MinimumExpanding)
-        self.layout.addWidget(self.textDisplay, 0, 0, 2, 8)
+        self.layout().addWidget(self.textDisplay, 0, 0, 2, 8)
         
         # Instanciation du widget clavier
         self.keyboard = KeyboardWidget()
         # Sous le display
         self.keyboard.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.MinimumExpanding)
-        self.layout.addWidget(self.keyboard, 2, 0, 4, 10)
+        self.layout().addWidget(self.keyboard, 2, 0, 4, 10)
         
         # Modification du texte affiché quand interaction avec le clavier
         self.keyboard.textUpdated.connect(self.textDisplay.updateText)
@@ -33,13 +33,13 @@ class Keyboard(Page):
         # TTS
         self.tts = PushButton("Text to\nSpeech")
         self.tts.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.MinimumExpanding)
-        self.layout.addWidget(self.tts, 0, 9, 1, 1)
+        self.layout().addWidget(self.tts, 0, 9, 1, 1)
         self.tts.clicked.connect(self.textToSpeech)
         
         # Mail
         self.mail = PushButton("Envoyer\npar mail")
         self.mail.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.MinimumExpanding)
-        self.layout.addWidget(self.mail, 1, 9, 1, 1)
+        self.layout().addWidget(self.mail, 1, 9, 1, 1)
         self.mail.clicked.connect(self.sendMail)
         
         # Images pour les boutons de scroll
@@ -52,7 +52,7 @@ class Keyboard(Page):
         self.scrollUp.setIconSize(QSize(100, 100))
         self.scrollUp.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.MinimumExpanding)
         self.scrollUp.clicked.connect(self.scrollTextUp)
-        self.layout.addWidget(self.scrollUp, 0, 8, 1, 1)
+        self.layout().addWidget(self.scrollUp, 0, 8, 1, 1)
         
         # Scroll vers le bas
         self.scrollDown = PushButton()
@@ -60,7 +60,7 @@ class Keyboard(Page):
         self.scrollDown.setIconSize(QSize(100, 100))
         self.scrollDown.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.MinimumExpanding)
         self.scrollDown.clicked.connect(self.scrollTextDown)
-        self.layout.addWidget(self.scrollDown, 1, 8, 1, 1)
+        self.layout().addWidget(self.scrollDown, 1, 8, 1, 1)
         
     def scrollTextUp(self):
         self.textDisplay.scrollText("up")

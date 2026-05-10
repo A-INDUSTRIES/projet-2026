@@ -9,7 +9,7 @@ class Settings(Page):
         super().__init__(*args)
 
         # Instanciation du layout
-        self.layout = VBoxLayout(self)
+        self.setLayout(VBoxLayout(self))
 
         # Instanciation des widgets
         self.homeButton = PushButton("menu") # A changer pour une icone
@@ -20,12 +20,12 @@ class Settings(Page):
         # Connection des events
         self.homeButton.clicked.connect(lambda _event: self.switch("menu"))
 
-        self.layout.addWidget(self.voiceChoice)
-        self.layout.addStretch(1)
+        self.layout().addWidget(self.voiceChoice)
+        self.layout().addStretch(1)
         self.bottomRow.addWidget(self.homeButton)
         self.bottomRow.addWidget(self.calibrate)
         self.bottomRow.addStretch(1)
-        self.layout.addLayout(self.bottomRow)
+        self.layout().addLayout(self.bottomRow)
     
     def updateStyle(self):
         self.parent().updateStyle()
@@ -36,12 +36,12 @@ class Setting(QWidget, EyeWidget):
         self.name = name
         self.values = values
 
-        self.layout = HBoxLayout(self)
+        self.setLayout(HBoxLayout(self))
 
         self.description = QLabel(description)
 
-        self.layout.addWidget(self.description)
-        self.layout.addStretch(1)
+        self.layout().addWidget(self.description)
+        self.layout().addStretch(1)
 
         self.buttons = []
         for i, option in enumerate(options):
