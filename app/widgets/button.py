@@ -11,10 +11,10 @@ class Button(QPushButton, EyeWidget):
         self.shift = False
         self.special = False
         
-        self.layout = QVBoxLayout(self)
+        self.setLayout(QVBoxLayout(self))
         self.label = QLabel(char)
-        self.layout.addWidget(self.label)
-        self.layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self.layout().addWidget(self.label)
+        self.layout().setAlignment(Qt.AlignmentFlag.AlignHCenter)
         
         self.character = char
         if special:

@@ -12,7 +12,7 @@ class KeyboardWidget(QWidget, EyeWidget):
         super().__init__()
         
         # Initialisation du layout en grille
-        self.layout = GridLayout(self)
+        self.setLayout(GridLayout(self))
         
         # Gestion des majuscules avec Caps Lock et Shift
         self.cpsLock = False
@@ -44,7 +44,7 @@ class KeyboardWidget(QWidget, EyeWidget):
         for n in range(len(self.lines)):
             self.lowerLetter = Button(self.lines[n], self.specialLines[n])
             self.lowerLetter.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-            self.layout.addWidget(self.lowerLetter, n//10, 2+2*(n%10), 1, 2)
+            self.layout().addWidget(self.lowerLetter, n//10, 2+2*(n%10), 1, 2)
             self.lowerLetter.onclick.connect(self.handleCharacterButton)
             self.keyboardButtons.append(self.lowerLetter)
 
@@ -53,43 +53,43 @@ class KeyboardWidget(QWidget, EyeWidget):
         self.homeButton = PushButton("menu") # A changer pour une icone
         self.homeButton.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.homeButton.clicked.connect(lambda _event: self.parent().switch("menu"))
-        self.layout.addWidget(self.homeButton, 4, 2, 1, 4)
+        self.layout().addWidget(self.homeButton, 4, 2, 1, 4)
                 
         # Espace
         self.space = Button(" ")
         self.space.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.space.onclick.connect(lambda _event, char=" ": self.handleCharacterButton(char))
-        self.layout.addWidget(self.space, 4, 6, 1, 10)
+        self.layout().addWidget(self.space, 4, 6, 1, 10)
         
         # Back Space
         self.backSpace = PushButton("Back\nSpace")
         self.backSpace.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.backSpace.clicked.connect(lambda _event: self.handleBackSpace())
-        self.layout.addWidget(self.backSpace, 0, 22, 1, 2)
+        self.layout().addWidget(self.backSpace, 0, 22, 1, 2)
         
         # Touche Enter
         self.enter = PushButton("Enter")
         self.enter.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.enter.clicked.connect(lambda _event: self.handleEnter())
-        self.layout.addWidget(self.enter, 1, 22, 1, 2)
+        self.layout().addWidget(self.enter, 1, 22, 1, 2)
         
         # Bouton effacer tout le texte
         self.eraseText = PushButton("Effacer\ntout le\ntexte")
         self.eraseText.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.eraseText.clicked.connect(lambda _event: self.handleTextErasion())
-        self.layout.addWidget(self.eraseText, 2, 22, 2, 2)
+        self.layout().addWidget(self.eraseText, 2, 22, 2, 2)
         
         # Flèche gauche
         self.leftArrow = PushButton("<")
         self.leftArrow.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.leftArrow.clicked.connect(lambda _event: self.handleLeftArrow())
-        self.layout.addWidget(self.leftArrow, 4, 16, 1, 3)
+        self.layout().addWidget(self.leftArrow, 4, 16, 1, 3)
         
         # Flèche droite
         self.rightArrow = PushButton(">")
         self.rightArrow.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.rightArrow.clicked.connect(lambda _event: self.handleRightArrow())
-        self.layout.addWidget(self.rightArrow, 4, 19, 1, 3)
+        self.layout().addWidget(self.rightArrow, 4, 19, 1, 3)
         
         # Shift
         self.shiftKey = Button("Shift")
@@ -97,25 +97,25 @@ class KeyboardWidget(QWidget, EyeWidget):
         self.shiftKey.setIconSize(QSize(48, 48))
         self.shiftKey.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.shiftKey.onclick.connect(lambda _event: self.handleShift())
-        self.layout.addWidget(self.shiftKey, 3, 0, 1, 2)
+        self.layout().addWidget(self.shiftKey, 3, 0, 1, 2)
         
         # Caps Lock
         self.capsLock = Button("verr\nmaj\noff")
         self.capsLock.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.capsLock.onclick.connect(lambda _event: self.handleCapsLock())
-        self.layout.addWidget(self.capsLock, 2, 0, 1, 2)
+        self.layout().addWidget(self.capsLock, 2, 0, 1, 2)
         
         # Bouton caractères spéciaux
         self.special = Button("?!&")
         self.special.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.special.onclick.connect(lambda _event: self.toggleSpecialCharacters())
-        self.layout.addWidget(self.special, 4, 0, 1, 2)
+        self.layout().addWidget(self.special, 4, 0, 1, 2)
         
         # Bouton Gaze Typing ON / OFF
         self.gazeTyping = PushButton(" Gaze\nTyping\nON/OFF")
         self.gazeTyping.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.gazeTyping.clicked.connect(lambda _event: self.handleGazeTyping())
-        self.layout.addWidget(self.gazeTyping, 0, 0, 2, 2)
+        self.layout().addWidget(self.gazeTyping, 0, 0, 2, 2)
                
     
     def handleCapsLock(self):
