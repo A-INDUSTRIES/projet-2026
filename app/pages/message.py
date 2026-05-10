@@ -1,7 +1,9 @@
 from PySide6.QtWidgets import QLabel, QSizePolicy
+from PySide6.QtCore import QTimer
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from ..widgets import LineEdit, TextDisplayWidget, KeyboardWidget, VBoxLayout, PushButton, HBoxLayout, GridLayout
 from ..modules.mail import MailManager
+from ..modules.settings import SettingsManager
 from . import Page
 
 class MessagePage(Page):
@@ -78,5 +80,18 @@ class NewMessagePage(Page):
         self.grid.addLayout(self.vbox, 0, 0, 5, 1)
         self.grid.addWidget(self.keyboard, 5, 0, 10, 1)
 
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.resetSendButton)
+
+    def animateSend(self):
+        self.sendButton.setText("envoyé!")
+        self.sendButton.setFontColor("green")
+        self.timer.start(SettingsManager().getSetting("animationSpeed"))
+
+    def resetSendButton(self):
+        self.sendButton.setText("envoyer")
+        self.sendButton.setFontColor("black")
+
     def send(self):
         MailManager().send(self.recepient.toPlainText(), self.subject.toPlainText(), self.content.toPlainText())
+        self.animateSend()

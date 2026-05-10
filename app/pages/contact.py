@@ -1,10 +1,11 @@
 from PySide6.QtWidgets import QLabel
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QTimer
 from ..widgets import VBoxLayout, PushButton, HBoxLayout, GridLayout, Widget
 from ..modules.contacts import ContactsManager, Contact
 from ..widgets.keyboard_widget import KeyboardWidget
 from ..widgets.line_edit import LineEdit
 from ..modules.logger import debug
+from ..modules.settings import SettingsManager
 from . import Page
 
 class ContactPage(Page):
@@ -51,6 +52,8 @@ class ContactPage(Page):
 
         self.grid.addLayout(self.vbox, 0, 0, 5, 1)
         self.grid.addWidget(self.keyboard, 5, 0, 10, 1)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.resetSaveButton)
 
     def save(self):
         contact = Contact(name=self.name, email=self.email)
@@ -58,6 +61,16 @@ class ContactPage(Page):
             ContactsManager().createContact(contact)
         else:
             ContactsManager().editContact(self.id, contact)
+        self.animateSave()
+
+    def animateSave(self):
+        self.saveButton.setText("sauvegardé!")
+        self.saveButton.setFontColor("green")
+        self.timer.start(SettingsManager().getSetting("animationSpeed"))
+
+    def resetSaveButton(self):
+        self.saveButton.setText("sauvegarder")
+        self.saveButton.setFontColor("black")
 
     def setName(self, text):
         self.name = text
