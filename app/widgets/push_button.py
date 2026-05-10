@@ -9,7 +9,7 @@ class PushButton(QPushButton, EyeWidget):
         self._value = 0
         
         self.animation = QPropertyAnimation(self, b"value")
-        self.animation.setDuration(2000)
+        self.animation.setDuration(1000)
         self.animation.setStartValue(0)
         self.animation.setEndValue(100)
 
@@ -56,4 +56,4 @@ class PushButton(QPushButton, EyeWidget):
             return EyeAction.CLICK
         
         self.timer.start(100)
-        return EyeAction.NONE
+        return EyeAction.GAZE

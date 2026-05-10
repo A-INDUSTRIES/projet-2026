@@ -1,3 +1,4 @@
+from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import QPoint
 from enum import Enum
 
@@ -8,10 +9,9 @@ class EyeAction(Enum):
 
 class EyeWidget():
     def eyeEvent(self, position: QPoint):
-        for i in range(self.layout().count()):
-            object = self.layout().itemAt(i)
-            if isinstance(object, EyeWidget):
-                rect = object.geometry()
-                if rect.contains(position):
-                    return object.eyeEvent(position)
+        if isinstance(self.layout(), EyeWidget):
+            return self.layout().eyeEvent(position)
         return EyeAction.NONE
+    
+class Widget(QWidget, EyeWidget):
+    pass
