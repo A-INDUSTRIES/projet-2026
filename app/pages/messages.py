@@ -1,9 +1,9 @@
-from PySide6.QtWidgets import QLabel, QScrollArea, QSizePolicy, QStyleOption, QStyle, QWidget
+from PySide6.QtWidgets import QLabel, QSizePolicy, QStyleOption, QStyle
 from PySide6.QtCore import Qt, Signal, QThread, Slot
 from PySide6.QtGui import QPainter
+from ..widgets import VBoxLayout, HBoxLayout, PushButton, ScrollArea, Widget
 from ..modules.mail import MailManager
 from ..modules.messages import Message as M
-from ..widgets import EyeWidget, VBoxLayout, HBoxLayout, PushButton
 from . import MessagePage, NewMessagePage, Page
 
 class Messages(Page):
@@ -17,8 +17,8 @@ class Messages(Page):
         self.title = QLabel("Messages")
         self.homeButton = PushButton("menu") # A changer pour une icone
         self.bottomRow = HBoxLayout()
-        self.messages = QScrollArea()
-        self.messagesContent = QWidget()
+        self.messages = ScrollArea()
+        self.messagesContent = Widget()
         self.messagesLayout = VBoxLayout(self.messagesContent)
 
         self.title.setObjectName("title")
@@ -62,7 +62,7 @@ class Messages(Page):
         page = NewMessagePage(subject=f"RE: {message.subject}", recepient=message.sender)
         self.switch(page)
 
-class Message(QWidget, EyeWidget):
+class Message(Widget):
     openView = Signal(int, M)
     respondView = Signal(M)
     deleted = Signal()

@@ -1,10 +1,10 @@
-from PySide6.QtWidgets import QLabel, QWidget
+from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import Signal
+from ..widgets import VBoxLayout, PushButton, HBoxLayout, GridLayout, Widget
 from ..modules.contacts import ContactsManager, Contact
 from ..widgets.keyboard_widget import KeyboardWidget
 from ..widgets.line_edit import LineEdit
 from ..modules.logger import debug
-from ..widgets import EyeWidget, VBoxLayout, PushButton, HBoxLayout, GridLayout
 from . import Page
 
 class ContactPage(Page):
@@ -65,7 +65,7 @@ class ContactPage(Page):
     def setEmail(self, text):
         self.email = text
 
-class Value(QWidget, EyeWidget):
+class Value(Widget):
     valueChanged = Signal(str)
 
     def __init__(self, name, value, placeholder):

@@ -1,8 +1,8 @@
-from PySide6.QtWidgets import QStyleOption, QStyle, QWidget
+from PySide6.QtWidgets import QStyleOption, QStyle
 from PySide6.QtGui import QPainter
-from ..widgets import EyeWidget
+from ..widgets import Widget
 
-class Page(QWidget, EyeWidget):
+class Page(Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

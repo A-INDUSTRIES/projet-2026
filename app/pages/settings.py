@@ -1,7 +1,7 @@
-from PySide6.QtWidgets import QLabel, QStyleOption, QStyle, QWidget
+from PySide6.QtWidgets import QLabel, QStyleOption, QStyle
 from PySide6.QtGui import QPainter
+from ..widgets import Widget, PushButton, HBoxLayout, VBoxLayout
 from ..modules.settings import SettingsManager
-from ..widgets import EyeWidget, PushButton, HBoxLayout, VBoxLayout
 from . import Page
 
 class Settings(Page):
@@ -30,7 +30,7 @@ class Settings(Page):
     def updateStyle(self):
         self.parent().updateStyle()
 
-class Setting(QWidget, EyeWidget):
+class Setting(Widget):
     def __init__(self, name, description, options, values):
         super().__init__()
         self.name = name
