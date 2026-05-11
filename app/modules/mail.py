@@ -6,7 +6,8 @@ from email.mime.text import MIMEText
 from base64 import urlsafe_b64encode
 from .utils import Singleton, getUserDataPath
 from .logger import debug
-from .messages import Message
+from .messages import Message, MessageDecoder, MessageEncoder
+import json
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
@@ -16,7 +17,11 @@ class MailManager(metaclass=Singleton):
     def __init__(self):
         self.creds = None
         self.messages = []
+        self.cache = getUserDataPath() / "messages.cache"
         path = getUserDataPath() / "token.json"
+        if self.cache.exists():
+            with open(self.cache, "r") as f:
+                self.messages = json.load(f, cls=MessageDecoder)
         if path.exists():
             self.creds = Credentials.from_authorized_user_file(path, SCOPES)
             if not self.creds or not self.creds.valid:
@@ -76,6 +81,8 @@ class MailManager(metaclass=Singleton):
         batch.execute()
 
         self.messages.sort(key = lambda x: x.date, reverse=True)
+
+        self.saveCache()
         
         return self.messages
     
@@ -88,13 +95,17 @@ class MailManager(metaclass=Singleton):
         for message in self.messages:
             if message.id() == id:
                 self.messages.remove(message)
-        print(id, res)
+        self.saveCache()
     
     def parse_message(self, req_id, msg, err):
         if err is not None:
             debug(f"Error for req {req_id} : {err}")
             return
         self.messages.append(Message.from_raw(msg))
+
+    def saveCache(self):
+        with open(self.cache, "w") as f:
+            json.dump(self.messages, f, indent=4, cls=MessageEncoder)
 
 if __name__ == "__main__":
     mail = MailManager()

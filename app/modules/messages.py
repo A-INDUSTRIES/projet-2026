@@ -1,4 +1,5 @@
 from base64 import urlsafe_b64decode, urlsafe_b64encode
+import json
 
 class Message():
     def __init__(self, id, historyId, date, sender, subject, content):
@@ -31,3 +32,20 @@ class Message():
             if header['name'] == 'From':
                 sender = header["value"]
         return Message(id, historyId, date, sender, subject, content)
+    
+class MessageDecoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def decode(self, s, **kwargs):
+        data = super().decode(s, **kwargs)
+        return [Message(v["id"], v["historyId"], v["date"], v["sender"], v["subject"], v["content"]) for v in data if isinstance(v, dict)]
+    
+class MessageEncoder(json.JSONEncoder):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def default(self, o):
+        if isinstance(o, Message):
+            return {"id": o.id(), "historyId": o.historyId, "date": o.date, "sender": o.sender, "subject": o.subject, "content": o.content}
+        return super().default(o)
