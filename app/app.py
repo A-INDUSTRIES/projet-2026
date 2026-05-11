@@ -95,22 +95,6 @@ class MainWindow(QMainWindow):
         self.stack.widget(0).eyeEvent(self.mapFromGlobal(mouse.pos()))
         self.eye.update()
 
-    def paintEvent(self, event):
-        painter = QPainter(self)
-
-        brush = QBrush("red")
-
-        pen = QPen("black")
-
-        painter.setBrush(brush)
-        painter.setPen(pen)
-        painter.setOpacity(0.2)
-
-        center = self.mapFromGlobal(QCursor().pos())
-
-        painter.drawEllipse(center, 20, 20)
-        return super().paintEvent(event)
-
 class Container(QWidget):
     def switch(self, page):
         self.parent().switch(page)
