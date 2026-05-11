@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QMainWindow
-from PySide6.QtGui import Qt, QShortcut, QKeySequence, QCursor
+from PySide6.QtGui import Qt, QShortcut, QKeySequence, QCursor, QPainter, QBrush, QPen
+from PySide6.QtWidgets import QMainWindow, QStackedLayout, QWidget
 from app.pages import *
 from app.modules.tts import VoiceEngine
 from app.modules.logger import *
@@ -19,7 +19,18 @@ class MainWindow(QMainWindow):
         self.refreshShortcut = QShortcut(QKeySequence('r'), self)
         self.refreshShortcut.activated.connect(self.updateStyle)
 
+        self.container = Container()
+        self.stack = QStackedLayout(self.container)
+        self.stack.setStackingMode(QStackedLayout.StackingMode.StackAll)
+        
+        self.setCentralWidget(self.container)
+
+        self.eye = Eye()
+        self.eye.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents) 
+
         self.switch("menu")
+        self.stack.insertWidget(1, self.eye)
+        self.stack.setCurrentIndex(1)
 
         self.updateStyle()
 
@@ -34,25 +45,29 @@ class MainWindow(QMainWindow):
         self.timer.start()
 
     def switch(self, page: str | Page | None=None):
-        current = self.centralWidget()
+        current = self.stack.widget(0)
+
+        if current:
+            self.stack.removeWidget(current)
+
         if current and current in self.static_pages.values():
             current.setParent(None)
 
         if isinstance(page, Page):
-            self.setCentralWidget(page)
+            self.stack.insertWidget(0, page)
         elif isinstance(page, str):
             if page in self.static_pages:
-                self.setCentralWidget(self.static_pages[page])
+                self.stack.insertWidget(0, self.static_pages[page])
             else:
                 match page:
                     case "menu":
-                        self.setCentralWidget(Menu())
+                        self.stack.insertWidget(0, Menu())
                     case "contacts":
-                        self.setCentralWidget(Contacts())
+                        self.stack.insertWidget(0, Contacts())
                     case "messages":
-                        self.setCentralWidget(Messages())
+                        self.stack.insertWidget(0, Messages())
                     case "settings":
-                        self.setCentralWidget(Settings())
+                        self.stack.insertWidget(0, Settings())
                     case _:
                         warn(f"Page {page} does not exists.")
         else:
@@ -77,4 +92,48 @@ class MainWindow(QMainWindow):
 
     def eyeEvent(self):
         mouse = QCursor()
-        self.centralWidget().eyeEvent(self.mapFromGlobal(mouse.pos()))
+        self.stack.widget(0).eyeEvent(self.mapFromGlobal(mouse.pos()))
+        self.eye.update()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+
+        brush = QBrush("red")
+
+        pen = QPen("black")
+
+        painter.setBrush(brush)
+        painter.setPen(pen)
+        painter.setOpacity(0.2)
+
+        center = self.mapFromGlobal(QCursor().pos())
+
+        painter.drawEllipse(center, 20, 20)
+        return super().paintEvent(event)
+
+class Container(QWidget):
+    def switch(self, page):
+        self.parent().switch(page)
+
+    def close(self):
+        self.parent().close()
+
+    def updateStyle(self):
+        self.parent.updateStyle()
+
+class Eye(QWidget):
+    def paintEvent(self, event):
+        painter = QPainter(self)
+
+        brush = QBrush("gray")
+
+        pen = QPen("black")
+
+        painter.setBrush(brush)
+        painter.setPen(pen)
+        painter.setOpacity(0.2)
+
+        center = self.mapFromGlobal(QCursor().pos())
+
+        painter.drawEllipse(center, 20, 20)
+        return super().paintEvent(event)
