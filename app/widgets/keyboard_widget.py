@@ -33,7 +33,7 @@ class KeyboardWidget(QWidget, EyeWidget):
         self.lines = self.firstLine + self.secondLine + self.thirdLine + self.fourthLine
         
         # Equivalent caractères spéciaux aux touches de base
-        self.firstSpecial = ["1/2", "1/3", "2/3", "1/4", "3/4", "²", "³", "⁴", "≠", "..."]
+        self.firstSpecial = ["1/2", "1/3", "é", "è", "à", "²", "³", "⁴", "≠", "..."]
         self.secondSpecial = list("@#€_&-+()/")
         self.thirdSpecial = list('*";!?=~£¥$')
         self.fourthSpecial = list("^°{") + list("}[]\\%<>")
@@ -92,7 +92,7 @@ class KeyboardWidget(QWidget, EyeWidget):
         self.layout().addWidget(self.rightArrow, 4, 19, 1, 3)
         
         # Shift
-        self.shiftKey = Button("Shift")
+        self.shiftKey = Button("")
         self.shiftKey.setIcon(self.shiftOFF)
         self.shiftKey.setIconSize(QSize(48, 48))
         self.shiftKey.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -100,19 +100,21 @@ class KeyboardWidget(QWidget, EyeWidget):
         self.layout().addWidget(self.shiftKey, 3, 0, 1, 2)
         
         # Caps Lock
-        self.capsLock = Button("verr\nmaj\noff")
+        self.capsLock = Button("")
         self.capsLock.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.capsLock.onclick.connect(lambda _event: self.handleCapsLock())
         self.layout().addWidget(self.capsLock, 2, 0, 1, 2)
+        self.updateCapsLockDisplay()
         
         # Bouton caractères spéciaux
-        self.special = Button("?!&")
+        self.special = Button("")
         self.special.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.special.onclick.connect(lambda _event: self.toggleSpecialCharacters())
         self.layout().addWidget(self.special, 4, 0, 1, 2)
+        self.updateSpecialCharactersDisplay()
         
         # Bouton Gaze Typing ON / OFF
-        self.gazeTyping = PushButton(" Gaze\nTyping\nON/OFF")
+        self.gazeTyping = PushButton(" Gaze\nTyping\nOFF")
         self.gazeTyping.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.gazeTyping.clicked.connect(lambda _event: self.handleGazeTyping())
         self.layout().addWidget(self.gazeTyping, 0, 0, 2, 2)
@@ -154,8 +156,17 @@ class KeyboardWidget(QWidget, EyeWidget):
         
         
     def toggleSpecialCharacters(self):
+        self.specialCharactersToggled = not self.specialCharactersToggled
         for key in self.keyboardButtons:
             key.toggleSpecial()  
+        self.updateSpecialCharactersDisplay()
+            
+            
+    def updateSpecialCharactersDisplay(self):
+        if self.specialCharactersToggled:
+            self.special.setText("abc")
+        else:
+            self.special.setText("?!&&")
             
               
     def handleCharacterButton(self, character):       
