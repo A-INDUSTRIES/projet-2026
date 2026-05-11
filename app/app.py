@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QMainWindow
-from PySide6.QtGui import Qt, QShortcut, QKeySequence
+from PySide6.QtGui import Qt, QShortcut, QKeySequence, QCursor
 from app.pages import *
 from app.modules.tts import VoiceEngine
 from app.modules.logger import *
@@ -27,6 +27,11 @@ class MainWindow(QMainWindow):
 
         # On montre la fenêtre quand elle est prête
         self.show()
+
+        self.timer = QTimer()
+        self.timer.setInterval(50)
+        self.timer.timeout.connect(self.eyeEvent)
+        self.timer.start()
 
     def switch(self, page: str | Page | None=None):
         current = self.centralWidget()
@@ -70,6 +75,6 @@ class MainWindow(QMainWindow):
         stylesheet = stylesheet.replace("var(extra-large)", f"{fontSize+20}px")
         self.setStyleSheet(stylesheet)
 
-    def mouseMoveEvent(self, event):
-        self.centralWidget().eyeEvent(event.scenePosition().toPoint())
-        return super().mouseMoveEvent(event)
+    def eyeEvent(self):
+        mouse = QCursor()
+        self.centralWidget().eyeEvent(self.mapFromGlobal(mouse.pos()))
