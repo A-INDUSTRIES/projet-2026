@@ -15,18 +15,48 @@ prev_model_center_avg = (320,240)
 max_observed_distance = 0  # Initialize adaptive radius
 prev_darkest_point = None
 
+# --- Gaze → external camera projection globals ---
+last_sphere_center = None
+last_gaze_dir = None
+
+calibrated = False
+R_gaze_to_cam = np.eye(3, dtype=np.float32)  # rotation from gaze-space to external cam space
+calibrated_sphere_center = None 
+
+sphere_center_locked_2d = False
+locked_model_center_avg = prev_model_center_avg
+
+# External camera / screen params (for 640x480)
+EXT_WIDTH = 1920
+EXT_HEIGHT = 1080
+EXT_CX = EXT_WIDTH // 2
+EXT_CY = EXT_HEIGHT // 2
+
+# Locking for 2D sphere center in the eye image
+sphere_center_locked_2d = False
+locked_model_center_avg = prev_model_center_avg
+
+# Current red circle position on external camera
+circle_x = EXT_CX
+circle_y = EXT_CY
+
+# For the calibration process and to smoothen the way the red circle "jitters" right now
+smoothed_u = EXT_CX
+smoothed_v = EXT_CY
+
 # Function to detect available cameras
 def detect_cameras(max_cams=10):
     available_cameras = []
     for i in range(max_cams):
-        cap = cv2.VideoCapture(i, cv2.CAP_DSHOW)
+        cap = cv2.VideoCapture(i, cv2.CAP_MSMF)
+        cap.set(cv2.CAP_PROP_FPS, 30)
         if cap.isOpened():
             available_cameras.append(i)
             cap.release()
     return available_cameras
 
 # Crop the image to maintain a specific aspect ratio (width:height) before resizing.
-def crop_to_aspect_ratio(image, width=540, height=480):
+def crop_to_aspect_ratio(image, width=640, height=480):
     current_height, current_width = image.shape[:2]
     desired_ratio = width / height
     current_ratio = current_width / current_height
@@ -308,17 +338,28 @@ def process_frames(thresholded_image_strict, thresholded_image_medium, threshold
             num_to_remove = len(ray_lines) - max_rays
             ray_lines = ray_lines[num_to_remove:]  # Keep only the last `max_rays` elements
 
-    model_center_average = (320,240)
 
-    model_center = compute_average_intersection(frame, ray_lines, 5, 1500, 5)
-    if model_center is not None:
-        model_center_average = update_and_average_point(model_centers, model_center, 200)
-
-    if model_center_average[0] == 320:
-        model_center_average = prev_model_center_avg
-    if model_center_average[0] != 0:
-        prev_model_center_avg = model_center_average
+    global sphere_center_locked_2d, locked_model_center_avg, prev_model_center_avg
     
+    model_center_average = (320,240)
+    model_center = compute_average_intersection(frame, ray_lines, 5, 1500, 5)
+
+    if not sphere_center_locked_2d:
+        # Normal behavior: keep updating running average while unlocked
+        if model_center is not None:
+            model_center_average = update_and_average_point(model_centers, model_center, 200)
+        else:
+            model_center_average = prev_model_center_avg
+
+        # If we got something sensible, remember it as the last good value
+        if model_center_average[0] != 0:
+            prev_model_center_avg = model_center_average
+            locked_model_center_avg = model_center_average
+    else:
+        # Once locked, always use the frozen center
+        model_center_average = locked_model_center_avg
+
+
     # Example safety check
     if center_x is None or center_y is None or model_center_average[0] is None or model_center_average[1] is None:
         return  # or skip this frame
@@ -334,7 +375,6 @@ def process_frames(thresholded_image_strict, thresholded_image_medium, threshold
     # Draw reference lines/ellipses
     cv2.circle(frame, model_center_average, int(max_observed_distance), (255, 50, 50), 2)  # Draw eye sphere (circle)
     cv2.circle(frame, model_center_average, 8, (255, 255, 0), -1)  # Draw eye center
-
 
 
     if final_rotated_rect is not None and center_x is not None and center_y is not None:
@@ -355,40 +395,31 @@ def process_frames(thresholded_image_strict, thresholded_image_medium, threshold
         # Draw the extended gaze line
         cv2.line(frame, (center_x, center_y), (extended_x, extended_y), (200, 255, 0), 3) 
 
-
-
-
     if render_cv_window:
         cv2.imshow("Best Thresholded Image Contours on Frame", frame)
 
-    # Call the function
     center, direction = compute_gaze_vector(center_x, center_y, model_center_average[0], model_center_average[1])
 
     if center is not None and direction is not None:
         origin_text = f"Origin: ({center[0]:.2f}, {center[1]:.2f}, {center[2]:.2f})"
         dir_text    = f"Direction: ({direction[0]:.2f}, {direction[1]:.2f}, {direction[2]:.2f})"
-        darkest     = f"Darkest: ({darkest_point[0]:.2f}, {darkest_point[1]:.2f})"
 
         # Set bottom-left corner for drawing text
         text_origin = (12, frame.shape[0] - 38)  # 40 pixels from bottom
-        text_dark = (12, frame.shape[0] - 63)  # 40 pixels from bottom
         text_dir    = (12, frame.shape[0] - 13)  # 15 pixels from bottom
         text_origin2 = (10, frame.shape[0] - 40)  # 40 pixels from bottom
         text_dir2    = (10, frame.shape[0] - 15)  # 15 pixels from bottom
-        text_dark2   = (10, frame.shape[0] - 65)  # 15 pixels from bottom
 
         # Draw shadow text on the frame
         cv2.putText(frame, origin_text, text_origin, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 3)
         cv2.putText(frame, dir_text, text_dir, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 3)
-        cv2.putText(frame, darkest, text_dark, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 3)
         # Draw text on the frame
         cv2.putText(frame, origin_text, text_origin2, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         cv2.putText(frame, dir_text, text_dir2, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-        cv2.putText(frame, darkest, text_dark2, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-    if center is not None and direction is not None:
         print(f"Sphere Center:   ({center[0]:.3f}, {center[1]:.3f}, {center[2]:.3f})")
         print(f"Gaze Direction:  ({direction[0]:.3f}, {direction[1]:.3f}, {direction[2]:.3f})")
+        
     else:
         print("No valid intersection found.")
 
@@ -533,6 +564,76 @@ def prune_intersections(intersections, maximum_intersections):
 
     return pruned_intersections
 
+def rotation_from_a_to_b(a, b):
+    # Normalisation
+    a = a / np.linalg.norm(a)
+    b = b / np.linalg.norm(b)
+
+    v = np.cross(a, b)
+    c = np.dot(a, b)
+
+    # Si les vecteurs sont déjà alignés
+    if c > 0.999999:
+        return np.eye(3, dtype=np.float32)
+    
+    # Si les vecteurs sont opposés (180°)
+    if c < -0.999999:
+        # On fait une rotation de 180° sur un axe arbitraire
+        return -np.eye(3, dtype=np.float32)
+
+    # Matrice antisymétrique du produit vectoriel (non normalisé)
+    vx, vy, vz = v
+    K = np.array([
+        [0,   -vz,  vy],
+        [vz,   0,  -vx],
+        [-vy,  vx,   0]
+    ], dtype=np.float32)
+
+    # Formule de Rodrigues optimisée
+    R = np.eye(3, dtype=np.float32) + K + (K @ K) * (1 / (1 + c))
+    return R
+
+def update_gaze_circle_from_current_gaze():
+    """
+    Use the latest gaze vector to update the circle position on the external camera.
+    Assumes we have calibrated R_gaze_to_cam that maps gaze_dir to external cam space.
+    """
+    global circle_x, circle_y, last_gaze_dir, calibrated, smoothed_u, smoothed_v
+
+    if not calibrated or last_gaze_dir is None:
+        return
+
+    g_raw = last_gaze_dir.copy()
+    norm = np.linalg.norm(g_raw)
+    if norm < 1e-6: return
+    g_raw /= norm
+    
+    # Rotate gaze into external camera coordinate system
+    g = R_gaze_to_cam @ last_gaze_dir
+
+    # Avoid weird cases where gaze points behind the camera
+    if g[2] <= 1e-3:
+        return
+
+    # Sensitivité/gain sur les x et y
+    sens_x = 7000
+    sens_y = 4000
+
+    # Simple pinhole projection onto 2D
+    u = EXT_CX - sens_x * (g[0] / g[2])
+    v = EXT_CY - sens_y * (g[1] / g[2])
+
+    #circle_x = int(np.clip(u, 0, EXT_WIDTH - 1))
+    #circle_y = int(np.clip(v, 0, EXT_HEIGHT - 1))
+    
+    alpha = 0.2 # Plus c'est petit, plus c'est fluide mais lent
+    
+    smoothed_u = alpha*u + (1-alpha)*smoothed_u
+    smoothed_v = alpha*v + (1-alpha)*smoothed_v
+    
+    circle_x = int(np.clip(smoothed_u, 0, EXT_WIDTH - 1))
+    circle_y = int(np.clip(smoothed_v, 0, EXT_HEIGHT - 1))
+
 def find_line_intersection(ellipse1, ellipse2):
     """
     Computes the intersection of two lines that are orthogonal to the surface of given ellipses.
@@ -572,7 +673,7 @@ def find_line_intersection(ellipse1, ellipse2):
 
     return (int(intersection_x), int(intersection_y))
 
-def compute_gaze_vector(x, y, center_x, center_y, screen_width=640, screen_height=480):
+def compute_gaze_vector(x, y, center_x, center_y, screen_width=1920, screen_height=1080):
     """Compute 3D gaze direction from pupil and sphere center screen coordinates.
     Returns:
         sphere_center (np.ndarray): 3D position of the sphere center in world space
@@ -610,7 +711,6 @@ def compute_gaze_vector(x, y, center_x, center_y, screen_width=640, screen_heigh
     ray_origin = camera_position
     ray_direction = far_point - camera_position
     ray_direction /= np.linalg.norm(ray_direction)
-    ray_direction = -ray_direction
 
     # Sphere radius and center offset
     inner_radius = 1.0 / 1.05
@@ -620,7 +720,7 @@ def compute_gaze_vector(x, y, center_x, center_y, screen_width=640, screen_heigh
 
     # Compute intersection with sphere
     origin = ray_origin
-    direction = -ray_direction
+    direction = ray_direction
     L = origin - sphere_center
 
     a = np.dot(direction, direction)
@@ -648,6 +748,11 @@ def compute_gaze_vector(x, y, center_x, center_y, screen_width=640, screen_heigh
             t = t2
         if t is None:
             return None, None
+
+    # Final intersection point
+    intersection_point = origin + t * direction
+    intersection_local = intersection_point - sphere_center
+    target_direction = intersection_local / np.linalg.norm(intersection_local)
 
     sqrt_disc = np.sqrt(discriminant)
     t1 = (-b - sqrt_disc) / (2 * a)
@@ -697,12 +802,22 @@ def compute_gaze_vector(x, y, center_x, center_y, screen_width=640, screen_heigh
         [t_*x_*z_ - s*y_, t_*y_*z_ + s*x_, t_*z_*z_ + c]
     ])
 
-    # Rotate +Z vector to get gaze direction
+     # Rotate +Z vector to get gaze direction
     gaze_local = np.array([0.0, 0.0, inner_radius])
     gaze_rotated = rotation_matrix @ gaze_local
     gaze_rotated /= np.linalg.norm(gaze_rotated)
 
-    # Write to file (overwrite every frame)
+    # --- Choose which sphere center to output: fixed (after calibration) or current ---
+    global last_sphere_center, last_gaze_dir, calibrated_sphere_center
+    last_sphere_center = sphere_center.copy()
+    last_gaze_dir = gaze_rotated.copy()
+
+    if calibrated_sphere_center is not None:
+        sphere_center_out = calibrated_sphere_center
+    else:
+        sphere_center_out = sphere_center
+
+    # --- Write to file (overwrite every frame) ---
     file_path = "gaze_vector.txt"
 
     def is_file_available(path):
@@ -715,7 +830,8 @@ def compute_gaze_vector(x, y, center_x, center_y, screen_width=640, screen_heigh
     if is_file_available(file_path):
         try:
             with open(file_path, "w") as f:
-                all_values = np.concatenate((sphere_center, gaze_rotated))
+                # Use sphere_center_out (fixed after calibration) for logging
+                all_values = np.concatenate((sphere_center_out, gaze_rotated))
                 csv_line = ",".join(f"{v:.6f}" for v in all_values)
                 f.write(csv_line + "\n")
         except Exception as e:
@@ -723,7 +839,63 @@ def compute_gaze_vector(x, y, center_x, center_y, screen_width=640, screen_heigh
     else:
         print("File is currently in use. Skipping write.")
 
-    return sphere_center, gaze_rotated
+    return sphere_center_out, gaze_rotated
+
+def on_mouse_frame_with_rays(event, x, y, flags, param):
+    """
+    Left-click on 'Frame with Ellipse and Rays' to manually set the eye sphere center.
+    This behaves like pressing 'c': it locks the 2D center and fixes the 3D origin
+    using the latest computed sphere center.
+    """
+    global sphere_center_locked_2d, locked_model_center_avg, prev_model_center_avg
+    global calibrated_sphere_center, calibrated, last_sphere_center
+
+    if event == cv2.EVENT_LBUTTONDOWN:
+        # Lock the 2D center to the clicked point
+        locked_model_center_avg = (x, y)
+        prev_model_center_avg = locked_model_center_avg
+        sphere_center_locked_2d = True
+
+        # If we have a valid latest 3D sphere center, fix that too
+        if last_sphere_center is not None:
+            calibrated_sphere_center = last_sphere_center.copy()
+            calibrated = True
+            print("Manual sphere center set at 2D:", locked_model_center_avg)
+            print("Fixed eye origin (sphere center 3D):", calibrated_sphere_center)
+        else:
+            print("Manual 2D center set at:", locked_model_center_avg,
+                  "but no 3D sphere center available yet.")
+
+
+def calibrate_gaze_to_external():
+    global calibrated, R_gaze_to_cam, calibrated_sphere_center
+    global sphere_center_locked_2d, locked_model_center_avg, prev_model_center_avg
+    global circle_x, circle_y
+
+    if last_gaze_dir is None or last_sphere_center is None:
+        print("Calibration failed: no gaze vector / origin available yet.")
+        return
+
+    # 1. On capture la direction actuelle (on la normalise par sécurité)
+    current_gaze = last_gaze_dir.copy()
+    current_gaze /= np.linalg.norm(current_gaze)
+
+    # 2. Cible : on veut que ce regard corresponde au centre de l'écran [0, 0, 1]
+    forward = np.array([0.0, 0.0, 1.0], dtype=np.float32)
+    
+    # 3. Calcul de la matrice de rotation
+    R_gaze_to_cam = rotation_from_a_to_b(current_gaze, forward)
+
+    # 4. Fixer l'origine 3D et le centre 2D de l'œil
+    calibrated_sphere_center = last_sphere_center.copy()
+    sphere_center_locked_2d = True
+    locked_model_center_avg = prev_model_center_avg
+
+    # 5. Forcer le point rouge au centre immédiatement pour éviter le "saut"
+    circle_x, circle_y = EXT_CX, EXT_CY
+    
+    calibrated = True
+    
 
 # Finds the pupil in an individual frame and returns the center point
 def process_frame(frame):
@@ -733,7 +905,6 @@ def process_frame(frame):
     frame = crop_to_aspect_ratio(frame)
 
     #find the darkest point
-    #darkest_point = get_darkest_area(frame)
     darkest_point = (0, 0)
 
     # Convert to grayscale to handle pixel value operations
@@ -743,8 +914,7 @@ def process_frame(frame):
     
     (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(gray_frame)
     new_darkest = minLoc
-    #new_darkest = get_darkest_area(gray_frame)
-
+    
     if prev_darkest_point is None:
         darkest_point = new_darkest
     else:
@@ -755,7 +925,7 @@ def process_frame(frame):
         )
 
     prev_darkest_point = darkest_point
-        
+    
     # apply thresholding operations at different levels
     # at least one should give us a good ellipse segment
     thresholded_image_strict = apply_binary_threshold(gray_frame, darkest_pixel_value, 5)#lite
@@ -773,34 +943,80 @@ def process_frame(frame):
     return final_rotated_rect
 
 
-# Process video from the selected camera
-def process_camera():
-    global selected_camera
-    cam_index = int(selected_camera.get())
+# Process video from the selected eye camera + external camera preview
+def process_camera(eye_cam, front_cam):
+    global selected_camera, circle_x, circle_y, calibrated
 
-    cap = cv2.VideoCapture(cam_index, cv2.CAP_DSHOW)
-    cap.set(cv2.CAP_PROP_EXPOSURE, -6)
-
-    if not cap.isOpened():
-        print("Error: Could not open camera.")
+    # ---- Eye camera (existing) ----
+    eye_cap = cv2.VideoCapture(eye_cam)
+    if not eye_cap.isOpened():
+        print(f"Error: Could not open eye camera at index {eye_cam}.")
         return
 
+    # ---- External camera (new) ----
+    external_cap = cv2.VideoCapture(front_cam)
+
+    if external_cap.isOpened():
+        external_cap.set(cv2.CAP_PROP_FRAME_WIDTH, EXT_WIDTH)
+        external_cap.set(cv2.CAP_PROP_FRAME_HEIGHT, EXT_HEIGHT)
+        print(f"External camera opened at index {front_cam} ({EXT_WIDTH}x{EXT_HEIGHT}).")
+    else:
+        print(f"Warning: Could not open external camera at index {front_cam}.")
+        external_cap = None
+
+    # Initial red circle at center (for calibration)
+    circle_x, circle_y = EXT_CX, EXT_CY
+    calibrated = False
+
+    # Make sure the eye-frame window exists and hook mouse callback
+    cv2.namedWindow("Frame with Ellipse and Rays")
+    cv2.setMouseCallback("Frame with Ellipse and Rays", on_mouse_frame_with_rays)
+
     while True:
-        ret, frame = cap.read()
-        if not ret:
+        # ----- Eye camera frame -----
+        ret_eye, eye_frame = eye_cap.read()
+        if not ret_eye:
+            print("Failed to read frame from eye camera.")
             break
 
-        #frame = cv2.flip(frame, 0)
-        process_frame(frame)
+        # Flip + process for ellipse / gaze vector
+        #eye_frame_flipped = cv2.flip(eye_frame, 0)
+        process_frame(eye_frame)  # this updates last_gaze_dir via compute_gaze_vector
 
+        # ----- External camera frame -----
+        if external_cap is not None:
+            ret_ext, ext_frame = external_cap.read()
+            if ret_ext:
+                ext_frame_resized = cv2.resize(ext_frame, (EXT_WIDTH, EXT_HEIGHT))
+
+                # If calibrated, update circle based on current gaze
+                if calibrated:
+                    update_gaze_circle_from_current_gaze()
+
+                # Draw small red circle representing gaze on external view
+                cv2.circle(ext_frame_resized, (circle_x, circle_y), 8, (0, 0, 255), -1)
+
+                cv2.imshow("External Camera (Gaze)", ext_frame_resized)
+            else:
+                print("Failed to read frame from external camera.")
+
+        # ----- Key controls -----
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             break
         elif key == ord(' '):
+            # Pause until another key press
             cv2.waitKey(0)
+        elif key == ord('c'):
+            # Calibrate so current gaze ray hits the center of the external screen
+            calibrate_gaze_to_external()
 
-    cap.release()
+    # Cleanup
+    eye_cap.release()
+    if external_cap is not None:
+        external_cap.release()
     cv2.destroyAllWindows()
+
 
 # Process a selected video file
 def process_video():
@@ -830,31 +1046,18 @@ def process_video():
 
     cap.release()
     cv2.destroyAllWindows()
-    
 
-# GUI for selecting camera or video
-def selection_gui():
-    global selected_camera
-    cameras = detect_cameras()
-
-    # Create Tkinter window
-    root = tk.Tk()
-    root.title("Select Input Source")
-    tk.Label(root, text="Orlosky Eye Tracker 3D", font=("Arial", 12, "bold")).pack(pady=10)
-
-    tk.Label(root, text="Select Camera:").pack(pady=5)
-
-    selected_camera = tk.StringVar()
-    selected_camera.set(str(cameras[0]) if cameras else "No cameras found")
-
-    camera_dropdown = ttk.Combobox(root, textvariable=selected_camera, values=[str(cam) for cam in cameras])
-    camera_dropdown.pack(pady=5)
-
-    tk.Button(root, text="Start Camera", command=lambda: [root.destroy(), process_camera()]).pack(pady=5)
-    tk.Button(root, text="Browse Video", command=lambda: [root.destroy(), process_video()]).pack(pady=5)
-
-    root.mainloop()
-
-# Run GUI to select camera or video
 if __name__ == "__main__":
-    selection_gui()
+    from cv2_enumerate_cameras import enumerate_cameras
+
+    eye = 0
+    front = 0
+
+    for camera_info in enumerate_cameras():
+        print(f'Camera: {camera_info.name}, VID: {camera_info.vid}, Index: {camera_info.index}')
+        if 0xc45 == camera_info.vid:
+            eye = camera_info.index
+        if 0x58f == camera_info.vid:
+            front = camera_info.index
+            
+    process_camera(eye, front)
