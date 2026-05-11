@@ -2,13 +2,13 @@ from base64 import urlsafe_b64decode, urlsafe_b64encode
 
 class Message():
     def __init__(self, id, sender, subject, content):
-        self.id = id
+        self._id = id
         self.sender = sender
         self.subject = subject
         self.content = content
 
     def id(self):
-        return self.id
+        return self._id
 
     @staticmethod
     def from_raw(msg):

@@ -7,9 +7,8 @@ from ..modules.settings import SettingsManager
 from . import Page
 
 class MessagePage(Page):
-    def __init__(self, id, message, *args, **kwargs):
+    def __init__(self, message, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.id = id
         self.message = message
 
         # Instanciation du layout
@@ -31,6 +30,7 @@ class MessagePage(Page):
         # Connection des events
         self.homeButton.clicked.connect(lambda _: self.switch("messages"))
         self.respondButton.clicked.connect(self.respond)
+        self.deleteButton.clicked.connect(self.delete)
 
         self.layout().addWidget(self.subject)
         self.layout().addWidget(self.sender)
@@ -44,6 +44,10 @@ class MessagePage(Page):
     def respond(self):
         page = NewMessagePage(subject=f"RE: {self.message.subject}", recepient=self.message.sender)
         self.switch(page)
+
+    def delete(self):
+        MailManager().delete(self.message.id())
+        self.switch("messages")
 
 class NewMessagePage(Page):
     def __init__(self, content="", subject="", recepient="",  *args, **kwargs):

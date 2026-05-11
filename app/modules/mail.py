@@ -9,7 +9,7 @@ from .utils import Singleton, getUserDataPath
 from .logger import debug
 from .messages import Message
 
-SCOPES = ["https://www.googleapis.com/auth/gmail.readonly", "https://www.googleapis.com/auth/gmail.send"]
+SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
 SIGNATURE = "<font style=\"color:rgb(153,153,153)\"><br>Envoyé depuis CommuniquerAvecLesYeux.</font>"
 
@@ -77,6 +77,17 @@ class MailManager(metaclass=Singleton):
 
         batch.execute()
         return self.messages
+    
+    def delete(self, id):
+        if not self.creds:
+            self.login()
+        service = build("gmail", "v1", credentials=self.creds)
+
+        res = service.users().messages().trash(userId="me", id=id).execute()
+        for message in self.messages:
+            if message.id() == id:
+                self.messages.remove(message)
+        print(id, res)
     
     def parse_message(self, req_id, msg, err):
         if err is not None:

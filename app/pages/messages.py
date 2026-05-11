@@ -42,11 +42,11 @@ class Messages(Page):
         self.loader.start()
 
     def loadMessages(self, messages):
-        for id, message in enumerate(messages):
-            widget = Message(id, message)
+        for message in messages:
+            widget = Message(message)
             widget.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
             widget.openView.connect(self.openMessage)
-            widget.deleted.connect(lambda widget=widget: self.deleteContact(widget))
+            widget.deleted.connect(lambda widget=widget: self.deleteMail(widget))
             widget.respondView.connect(self.respondMessage)
             self.messagesLayout.addWidget(widget)
 
@@ -54,8 +54,8 @@ class Messages(Page):
         self.messagesLayout.removeWidget(widget)
         widget.deleteLater()
 
-    def openMessage(self, id, message):
-        page = MessagePage(id, message)
+    def openMessage(self, message):
+        page = MessagePage(message)
         self.switch(page)
     
     def respondMessage(self, message):
@@ -63,13 +63,12 @@ class Messages(Page):
         self.switch(page)
 
 class Message(Widget):
-    openView = Signal(int, M)
+    openView = Signal(M)
     respondView = Signal(M)
     deleted = Signal()
 
-    def __init__(self, id, message, *args, **kwargs):
+    def __init__(self, message, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.id = id
         self.message = message
 
         self.subject = QLabel(message.subject)
@@ -94,9 +93,10 @@ class Message(Widget):
         self.layout().addWidget(self.deleteButton)
 
     def open(self):
-        self.openView.emit(self.id, self.message)
+        self.openView.emit(self.message)
 
     def delete(self):
+        MailManager().delete(self.message.id())
         self.deleted.emit()
 
     def respond(self):
