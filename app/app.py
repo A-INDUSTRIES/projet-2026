@@ -40,7 +40,7 @@ class MainWindow(QMainWindow):
         self.show()
 
         self.timer = QTimer()
-        self.timer.setInterval(50)
+        self.timer.setInterval(int(1/60))
         self.timer.timeout.connect(self.eyeEvent)
         self.timer.start()
 
@@ -119,7 +119,7 @@ class Container(QWidget):
         self.parent().close()
 
     def updateStyle(self):
-        self.parent.updateStyle()
+        self.parent().updateStyle()
 
 class Eye(QWidget):
     def paintEvent(self, event):
