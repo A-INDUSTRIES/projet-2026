@@ -62,20 +62,21 @@ class MailManager(metaclass=Singleton):
         service = build("gmail", "v1", credentials=self.creds)
 
         results = service.users().messages().list(userId="me", labelIds=["INBOX"]).execute()
-
         raw_messages = results.get("messages", [])
 
         batch = service.new_batch_http_request(callback=self.parse_message)
 
-        ids = map(Message.id, self.messages)
+        ids = set(map(Message.id, self.messages))
 
         for message in raw_messages:
             if message["id"] in ids:
-                debug(f'Id skipped: {message["id"]}')
                 continue
             batch.add(service.users().messages().get(userId="me", id=message["id"], format='full'))
 
         batch.execute()
+
+        self.messages.sort(key = lambda x: x.date, reverse=True)
+        
         return self.messages
     
     def delete(self, id):

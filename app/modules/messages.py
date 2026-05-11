@@ -1,8 +1,10 @@
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 
 class Message():
-    def __init__(self, id, sender, subject, content):
+    def __init__(self, id, historyId, date, sender, subject, content):
         self._id = id
+        self.historyId = historyId
+        self.date = date
         self.sender = sender
         self.subject = subject
         self.content = content
@@ -13,6 +15,8 @@ class Message():
     @staticmethod
     def from_raw(msg):
         id = msg["id"]
+        historyId = msg["historyId"]
+        date = int(msg["internalDate"])
         content = ""
         payload = msg['payload']
         if "text/html" in payload['mimeType']:
@@ -26,4 +30,4 @@ class Message():
                 subject = header["value"]
             if header['name'] == 'From':
                 sender = header["value"]
-        return Message(id, sender, subject, content)
+        return Message(id, historyId, date, sender, subject, content)
