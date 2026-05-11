@@ -60,7 +60,7 @@ class PushButton(QPushButton, EyeWidget):
         if self.animation.state() == QPropertyAnimation.State.Stopped:
             self.animation.start()
 
-        if self._value >= 99:
+        if self._value >= 90:
             self.timer.stop()
             self.stopAnimation()
             self.click()
