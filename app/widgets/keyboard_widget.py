@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import QSizePolicy, QWidget
-from PySide6.QtCore import QSize, Signal
+from PySide6.QtCore import QSize, Signal, Qt
 from PySide6.QtGui import QIcon
 from ..modules.logger import *
-from . import Button, EyeWidget, GridLayout, PushButton
+from . import Button, EyeWidget, GridLayout, PushButton, Widget
 
 
 class KeyboardWidget(QWidget, EyeWidget):    
@@ -118,7 +118,27 @@ class KeyboardWidget(QWidget, EyeWidget):
         self.gazeTyping.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.gazeTyping.clicked.connect(lambda _event: self.handleGazeTyping())
         self.layout().addWidget(self.gazeTyping, 0, 0, 2, 2)
-               
+
+        self.gazeWidget = Widget()
+        self.gazeWidget.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents) 
+        self.layout().addWidget(self.gazeWidget, 1, 2, 3, 20)
+
+        # self.enter.clicked.connect(self.debug_pos)
+        
+    def debug_pos(self):
+        poses = {}
+        for i in range(self.layout().count()):
+            object = self.layout().itemAt(i).widget()
+            if isinstance(object, PushButton):
+                pos = self.gazeWidget.mapFromGlobal(object.mapToGlobal(object.rect().center()))
+                poses[object.text()] = {
+                    "x": pos.x()/self.gazeWidget.width(),
+                    "y": pos.y()/self.gazeWidget.height()
+                }
+
+        with open("coords.json", 'w') as f:
+            import json
+            json.dump(poses, f, indent=4)
     
     def handleCapsLock(self):
         self.cpsLock = not self.cpsLock
