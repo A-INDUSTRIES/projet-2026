@@ -19,4 +19,4 @@ credentials.json
 **/assets_rc.py
 
 # Word Paths
-**/word_paths.json
+**/word_paths_raw.json

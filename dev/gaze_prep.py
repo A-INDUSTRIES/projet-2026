@@ -46,5 +46,5 @@ for originalWord in words:
 
     wordPaths.append({originalWord.strip(): wordPath})
 
-with open("word_paths.json", 'w', encoding="utf-8") as f:
+with open("word_paths_raw.json", 'w', encoding="utf-8") as f:
     json.dump(wordPaths, f, indent=4, ensure_ascii=False)
