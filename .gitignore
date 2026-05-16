@@ -20,3 +20,4 @@ credentials.json
 
 # Word Paths
 **/word_paths_raw.json
+**/word_curves.json

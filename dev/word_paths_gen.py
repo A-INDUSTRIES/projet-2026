@@ -39,6 +39,9 @@ for originalWord in words:
         word = word.replace(l, m)
     letters = list(word)
 
+    if len(letters) <= 1:
+        continue
+
     wordPath = []
     for letter in letters:
         coord = coords[letter]
