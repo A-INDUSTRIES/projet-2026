@@ -1616,6 +1616,7 @@ dependencies = [
     { name = "pyopengl" },
     { name = "pyside6" },
     { name = "scipy" },
+    { name = "similaritymeasures" },
     { name = "sounddevice" },
 ]
 
@@ -1634,6 +1635,7 @@ requires-dist = [
     { name = "pyopengl", specifier = ">=3.1.10" },
     { name = "pyside6", specifier = ">=6.10.2" },
     { name = "scipy", specifier = ">=1.17.1" },
+    { name = "similaritymeasures", specifier = ">=1.4.0" },
     { name = "sounddevice", specifier = ">=0.5.5" },
 ]
 
@@ -2356,6 +2358,19 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/06/c2/03d44d34e8264e1f25671677fece95b414c70fd85dcc2be8d5e821ee2628/shiboken6-6.10.2-cp39-abi3-manylinux_2_39_aarch64.whl", hash = "sha256:f74d3ed1f92658077d0630c39e694eb043aeb1d830a5d275176c45d07147427f", size = 269868, upload-time = "2026-02-02T08:50:25.662Z" },
     { url = "https://files.pythonhosted.org/packages/71/5d/5ca52c0ef86b3d01572131b6709bd531a080995f7e680720e9424328ce1d/shiboken6-6.10.2-cp39-abi3-win_amd64.whl", hash = "sha256:10f3c8c5e1b8bee779346f21c10dbc14cff068f0b0b4e62420c82a6bf36ac2e7", size = 1222052, upload-time = "2026-02-02T08:50:27.502Z" },
     { url = "https://files.pythonhosted.org/packages/46/52/421fd378313c89b67ee7d584bf4e9ec088fa1804891b8d74e02b16703457/shiboken6-6.10.2-cp39-abi3-win_arm64.whl", hash = "sha256:20c671645d70835af212ee05df60361d734c5305edb2746e9875c6a31283f963", size = 1784089, upload-time = "2026-02-02T08:50:29.069Z" },
+]
+
+[[package]]
+name = "similaritymeasures"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "scipy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/54/c8/c6847432ef7bc6ad65cd58577bb28c01e86680a45cdd29ab157d98374bc3/similaritymeasures-1.4.0.tar.gz", hash = "sha256:52032dd11ea3c0f94158e17df16f8d512101d6de0d31a2db42193f1434720572", size = 400378, upload-time = "2025-10-18T19:57:11.201Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/79/da/bcaed2d3b13f69cf7a2c2ec6c64e1008a7bd07e7ace4703ab2aeaf892852/similaritymeasures-1.4.0-py3-none-any.whl", hash = "sha256:4beae86c93a202cbbd8451f8b0d7163d54ba7562563af56f62a47f3491efe00f", size = 15499, upload-time = "2025-10-18T19:57:09.562Z" },
 ]
 
 [[package]]

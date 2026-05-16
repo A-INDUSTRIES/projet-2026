@@ -18,5 +18,6 @@ dependencies = [
     "pyopengl>=3.1.10",
     "pyside6>=6.10.2",
     "scipy>=1.17.1",
+    "similaritymeasures>=1.4.0",
     "sounddevice>=0.5.5",
 ]

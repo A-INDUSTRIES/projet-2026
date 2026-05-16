@@ -2,6 +2,7 @@ from PySide6.QtGui import Qt, QShortcut, QKeySequence, QCursor, QPainter, QBrush
 from PySide6.QtWidgets import QMainWindow, QStackedLayout, QWidget
 from app.pages import *
 from app.modules.tts import VoiceEngine
+from app.modules.gaze import GazeTyping
 from app.modules.logger import *
 from app.modules.settings import SettingsManager
 
@@ -75,6 +76,7 @@ class MainWindow(QMainWindow):
         
     def showEvent(self, event):
         VoiceEngine()
+        GazeTyping()
         return super().showEvent(event)
 
     def closeEvent(self, event):
