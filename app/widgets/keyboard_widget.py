@@ -40,6 +40,10 @@ class KeyboardWidget(QWidget, EyeWidget):
         self.specialLines = self.firstSpecial + self.secondSpecial + self.thirdSpecial + self.fourthSpecial
         
         self.keyboardButtons = [] # Pour garder chaque bouton accessible pour la modification (shift, capslock...)
+
+        self.gazeWidget = GazeWidget()
+        self.gazeWidget.words.connect(self.handleGaze)
+        self.layout().addWidget(self.gazeWidget, 1, 2, 3, 20)
         
         for n in range(len(self.lines)):
             self.lowerLetter = Button(self.lines[n], self.specialLines[n])
@@ -119,11 +123,7 @@ class KeyboardWidget(QWidget, EyeWidget):
         self.gazeTyping.clicked.connect(self.toggleGazeTyping)
         self.layout().addWidget(self.gazeTyping, 0, 0, 2, 2)
 
-        self.gazeWidget = GazeWidget()
-        self.gazeWidget.words.connect(self.handleGaze)
-        self.layout().addWidget(self.gazeWidget, 1, 2, 3, 20)
-
-        # self.enter.clicked.connect(self.debug_pos)
+        self.gazeWidget.raise_()
         
     def debug_pos(self):
         poses = {}
@@ -173,6 +173,7 @@ class KeyboardWidget(QWidget, EyeWidget):
     def handleGaze(self, words):
         if len(words) == 0:
             return
+        print(words[:10])
         self.textUpdated.emit(words[0][0] + " ")
 
     def toggleGazeTyping(self):

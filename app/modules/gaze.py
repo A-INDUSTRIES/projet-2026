@@ -89,70 +89,74 @@ class GazeTyping(metaclass=Singleton):
         self.points.append(point)
 
     def end(self):
-        if len(self.points) < 5:  # Sécurité minimale
+        if len(self.points) < 5:
             self.points = []
             return []
 
         results = []
-        # On utilise directement self.points (qui peut contenir 1000 points)
-        raw_points = np.array(self.points) 
+        raw_points = np.array(self.points)
+        
+        # Rayon de recherche de départ (15% du tracé)
+        zone_depart = raw_points[:max(5, len(raw_points) // 6)]
         
         for char, child_node in self.root.children.items():
             if child_node.coords:
-                # Étape 1 : Trouver le point le plus proche du départ dans les 10% premiers points
-                # (Permet de tolérer un regard qui s'est posé un peu avant de commencer à écrire)
-                zone_depart = raw_points[:max(5, len(raw_points) // 10)]
+                # Trouver le point de départ idéal pour ce mot précis
                 distances_depart = np.linalg.norm(zone_depart - np.array(child_node.coords), axis=1)
                 idx_depart = int(np.argmin(distances_depart))
                 initial_distance = distances_depart[idx_depart]
 
-                # Lancer la recherche à partir de cet index optimal
                 self.search(results, raw_points, child_node, idx_depart, char, initial_distance)
 
         self.points = []
         return sorted(results, key=lambda x: x[1])
 
     def search(self, results, raw_points, node, path_index, current_word, total_error):
-        # 1. Seuil d'erreur adapté aux coordonnées normalisées sur un long tracé
-        if total_error > 8.0:
+        path_len = len(raw_points)
+        word_len = len(current_word)
+
+        if word_len > 0 and (total_error / word_len) > 0.40:
             return
 
-        path_len = len(raw_points)
-
-        # 2. Si le nœud actuel est un mot complet, on valide s'il reste assez de points
         if node.is_word:
-            # Si on est proche de la fin du tracé (dans les 15% derniers points)
-            if path_index >= path_len - max(5, path_len // 7):
-                # Score final normalisé par la longueur pour ne pas pénaliser les mots longs
-                score_final = total_error / len(current_word)
+            if path_index >= int(path_len * 0.85):
+                score_final = total_error / word_len
                 results.append((node.word, score_final))
 
-        # 3. ALGORITHME DE BALAYAGE (Look-ahead)
-        # On ne passe pas bêtement au point suivant (index + 1). On cherche dans la fenêtre 
-        # de points suivants celui qui se rapproche le plus de la PROCHAINE lettre cible.
-        fenetre_recherche = max(10, path_len // 10)  # Taille de la zone de scan
-        idx_fin_fenetre = min(path_index + fenetre_recherche, path_len)
-
-        if path_index >= path_len or idx_fin_fenetre <= path_index:
+        if path_index >= path_len - 1:
             return
+
+        pas_estime = max(50, (path_len - path_index) // 2)
+        idx_fin_fenetre = min(path_index + pas_estime, path_len)
+        
+        points_futurs = raw_points[path_index:idx_fin_fenetre]
 
         for char, child_node in node.children.items():
             if child_node.coords is None:
                 continue
 
-            # Extraire les points futurs du tracé pour cette recherche
-            points_futurs = raw_points[path_index:idx_fin_fenetre]
-            
-            # Calculer la distance de TOUS ces points par rapport à la lettre suivante
             distances = np.linalg.norm(points_futurs - np.array(child_node.coords), axis=1)
             
-            # Trouver le point qui fait le "meilleur score" (le creux de la courbe)
+            if len(distances) == 0:
+                continue
+                
             idx_meilleur_local = int(np.argmin(distances))
             meilleure_distance = distances[idx_meilleur_local]
-            
-            # Le nouvel index dans le tracé global devient la position de cette lettre trouvée
-            prochain_index_global = path_index + idx_meilleur_local
 
-            # On descend d'un niveau dans le Trie en sautant directement à ce point du tracé
+            if meilleure_distance > 0.35:
+                continue
+
+            prochain_index_global = path_index + idx_meilleur_local
+            
+            while prochain_index_global < path_len - 1:
+                dist_suivante = np.linalg.norm(raw_points[prochain_index_global + 1] - np.array(child_node.coords))
+                if dist_suivante <= meilleure_distance * 1.25:
+                    prochain_index_global += 1
+                else:
+                    break
+
+            if prochain_index_global <= path_index:
+                prochain_index_global = path_index + 1
+
             self.search(results, raw_points, child_node, prochain_index_global, 
                         current_word + char, total_error + meilleure_distance)
