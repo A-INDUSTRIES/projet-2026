@@ -6,3 +6,4 @@ from .gaze_widget import *
 from .keyboard_widget import *
 from .line_edit import *
 from .text_display import *
+from .markers import *

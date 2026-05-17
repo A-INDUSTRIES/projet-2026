@@ -5,6 +5,7 @@ from app.modules.tts import VoiceEngine
 from app.modules.gaze import GazeTyping
 from app.modules.logger import *
 from app.modules.settings import SettingsManager
+from app.widgets import MarkersWidget
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -29,9 +30,13 @@ class MainWindow(QMainWindow):
         self.eye = Eye()
         self.eye.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents) 
 
+        self.markers = MarkersWidget()
+
         self.switch("menu")
-        self.stack.insertWidget(1, self.eye)
+        self.stack.insertWidget(1, self.markers)
+        self.stack.insertWidget(2, self.eye)
         self.stack.setCurrentIndex(1)
+        self.stack.setCurrentIndex(2)
 
         self.updateStyle()
 
