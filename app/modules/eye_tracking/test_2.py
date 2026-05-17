@@ -103,7 +103,6 @@ def get_aruco_markers_centers(frame):
         if all(i in points for i in [0, 1, 2, 3]):
             return np.array([points[0], points[1], points[2], points[3]])
     
-    print("ARUCO NOT OK")
     return None
 
 
@@ -337,6 +336,7 @@ def check_ellipse_goodness(binary_image, contour, debug_mode_on):
     
     return ellipse_goodness
 
+"""
 # Process frames for pupil detection
 def process_frames(thresholded_image_strict, thresholded_image_medium, thresholded_image_relaxed, frame, gray_frame, darkest_point, debug_mode_on, render_cv_window):
     global ray_lines
@@ -510,7 +510,7 @@ def process_frames(thresholded_image_strict, thresholded_image_medium, threshold
     cv2.imshow("Frame with Ellipse and Rays", frame)
 
     return final_rotated_rect
-
+"""
 def update_and_average_point(point_list, new_point, N):
     #Adds a new point to the list, keeps only the last N points, 
     #and returns the average of those points.
@@ -904,7 +904,7 @@ def calibrate_step(frame):
     global calibration_step, calib_gaze_pts, calib_cam_corners, Hom_gaze_to_cam, calibrated
     global is_collecting, current_step_gaze_buffer, current_step_cam_buffer, collecting_frames_count
 
-    if last_gaze_dir is None: return
+    # if last_gaze_dir is None: return
     
     cam_corners = get_aruco_markers_centers(frame)
     if cam_corners is None: return
@@ -1077,19 +1077,19 @@ def process_frame(frame):
     
     # apply thresholding operations at different levels
     # at least one should give us a good ellipse segment
-    thresholded_image_strict = apply_binary_threshold(gray_frame, darkest_pixel_value, 5)#lite
-    thresholded_image_strict = mask_outside_square(thresholded_image_strict, darkest_point, 250)
+    # thresholded_image_strict = apply_binary_threshold(gray_frame, darkest_pixel_value, 5)#lite
+    # thresholded_image_strict = mask_outside_square(thresholded_image_strict, darkest_point, 250)
 
-    thresholded_image_medium = apply_binary_threshold(gray_frame, darkest_pixel_value, 15)#medium
-    thresholded_image_medium = mask_outside_square(thresholded_image_medium, darkest_point, 250)
+    # thresholded_image_medium = apply_binary_threshold(gray_frame, darkest_pixel_value, 15)#medium
+    # thresholded_image_medium = mask_outside_square(thresholded_image_medium, darkest_point, 250)
     
-    thresholded_image_relaxed = apply_binary_threshold(gray_frame, darkest_pixel_value, 25)#heavy
-    thresholded_image_relaxed = mask_outside_square(thresholded_image_relaxed, darkest_point, 250)
+    # thresholded_image_relaxed = apply_binary_threshold(gray_frame, darkest_pixel_value, 25)#heavy
+    # thresholded_image_relaxed = mask_outside_square(thresholded_image_relaxed, darkest_point, 250)
     
-    #take the three images thresholded at different levels and process them
-    final_rotated_rect = process_frames(thresholded_image_strict, thresholded_image_medium, thresholded_image_relaxed, frame, gray_frame, darkest_point, False, False)
+    # #take the three images thresholded at different levels and process them
+    # final_rotated_rect = process_frames(thresholded_image_strict, thresholded_image_medium, thresholded_image_relaxed, frame, gray_frame, darkest_point, False, False)
     
-    return final_rotated_rect
+    # return final_rotated_rect
 
 
 # Process video from the selected eye camera + external camera preview
