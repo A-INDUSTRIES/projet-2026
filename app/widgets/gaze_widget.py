@@ -19,8 +19,6 @@ class GazeWidget(Widget):
         self.timer = QTimer()
         self.timer.timeout.connect(self.toggleInput)
 
-        self.toggle()
-
     @override
     def eyeEvent(self, position):
         if not self.toggled:
@@ -67,3 +65,7 @@ class GazeWidget(Widget):
 
         painter.drawPoints(self.points)
         return super().paintEvent(event)
+    
+    def hideEvent(self, event):
+        self.timer.stop()
+        return super().hideEvent(event)
