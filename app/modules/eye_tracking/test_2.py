@@ -75,12 +75,12 @@ M_homography_screen = None
 calib_gaze_pts = []
 calib_cam_corners = []
 
-marker_size = 200 # Taille en pixels, donc pas trop grands ig
+marker_size = 100 # Taille en pixels, donc pas trop grands ig
 aruco_static_corners = np.array([
-    (100, 100),
-    (EXT_WIDTH - 100, 100),
-    (EXT_WIDTH - 100, EXT_HEIGHT - 100),
-    (100, EXT_HEIGHT - 100)
+    (50, 50),
+    (EXT_WIDTH - 50, 50),
+    (EXT_WIDTH - 50, EXT_HEIGHT - 50),
+    (50, EXT_HEIGHT - 50)
 ], dtype=np.float32)
 Hom_gaze_to_cam = None
 
@@ -119,9 +119,9 @@ def draw_screen():
     ]
     
     for marker_id, (row, col) in enumerate(positions):
-        marker = cv2.aruco.generateImageMarker(aruco_dict, marker_id, marker_size - 50)
+        marker = cv2.aruco.generateImageMarker(aruco_dict, marker_id, marker_size - 30)
         
-        padding = cv2.copyMakeBorder(marker, 25, 25, 25, 25, cv2.BORDER_CONSTANT, value=255)
+        padding = cv2.copyMakeBorder(marker, 15, 15, 15, 15, cv2.BORDER_CONSTANT, value=255)
         background_with_padding = cv2.cvtColor(padding, cv2.COLOR_GRAY2BGR)
         
         canvas[row:row+marker_size, col:col+marker_size] = background_with_padding
