@@ -59,6 +59,7 @@ class MainWindow(QMainWindow):
         elif isinstance(page, str):
             if page in self.static_pages:
                 self.stack.insertWidget(0, self.static_pages[page])
+                self.static_pages[page].show()
             else:
                 match page:
                     case "menu":
