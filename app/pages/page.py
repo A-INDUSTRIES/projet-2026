@@ -6,6 +6,10 @@ class Page(Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def showEvent(self, event):
+        self.layout().setContentsMargins(100, 100, 100, 100)
+        return super().showEvent(event)
+
     def paintEvent(self, _):
         opt = QStyleOption()
         opt.initFrom(self)
