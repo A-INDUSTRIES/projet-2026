@@ -512,19 +512,17 @@ def process_frames(thresholded_image_strict, thresholded_image_medium, threshold
     return final_rotated_rect
 
 def update_and_average_point(point_list, new_point, N):
-    """
-    Adds a new point to the list, keeps only the last N points, 
-    and returns the average of those points.
+    #Adds a new point to the list, keeps only the last N points, 
+    #and returns the average of those points.
     
-    Parameters:
-    - point_list: Global list storing past points [(x1, y1), (x2, y2), ...]
-    - new_point: Tuple (x, y) representing the new point to add.
-    - N: Maximum number of points to keep in the list.
+    #Parameters:
+    #- point_list: Global list storing past points [(x1, y1), (x2, y2), ...]
+    #- new_point: Tuple (x, y) representing the new point to add.
+    #- N: Maximum number of points to keep in the list.
     
-    Returns:
-    - (avg_x, avg_y): The average point as a tuple of integers.
-    - None if the list is empty.
-    """
+    #Returns:
+    #- (avg_x, avg_y): The average point as a tuple of integers.
+    #- None if the list is empty.
     point_list.append(new_point)  # Add new point
 
     if len(point_list) > N:
@@ -539,16 +537,14 @@ def update_and_average_point(point_list, new_point, N):
     return (avg_x, avg_y)
 
 def draw_orthogonal_ray(image, ellipse, length=100, color=(0, 255, 0), thickness=1):
-    """
-    Draws a ray passing through the center of an ellipse orthogonally to its major axis.
+    #Draws a ray passing through the center of an ellipse orthogonally to its major axis.
     
-    Parameters:
-    - image: The OpenCV image to draw on.
-    - ellipse: A tuple ((cx, cy), (major_axis, minor_axis), angle) representing the fitted ellipse.
-    - length: Length of the ray to draw on each side of the ellipse center.
-    - color: Color of the line in BGR format (default: green).
-    - thickness: Thickness of the line (default: 2).
-    """
+    #Parameters:
+    #- image: The OpenCV image to draw on.
+    #- ellipse: A tuple ((cx, cy), (major_axis, minor_axis), angle) representing the fitted ellipse.
+    #- length: Length of the ray to draw on each side of the ellipse center.
+    #- color: Color of the line in BGR format (default: green).
+    #- thickness: Thickness of the line (default: 2).
 
     (cx, cy), (major_axis, minor_axis), angle = ellipse
     
@@ -571,19 +567,17 @@ def draw_orthogonal_ray(image, ellipse, length=100, color=(0, 255, 0), thickness
 stored_intersections = []  # Stores all past intersections
 
 def compute_average_intersection(frame, ray_lines, N, M, spacing):
-    """
-    Selects N random lines from the list, highlights them in red on the frame,
-    computes their intersections, stores them, and prunes stored intersections when exceeding M.
+    #Selects N random lines from the list, highlights them in red on the frame,
+    #computes their intersections, stores them, and prunes stored intersections when exceeding M.
 
-    Parameters:
-    - frame: The OpenCV frame to draw on.
-    - ray_lines: List of ellipse tuples ((cx, cy), (major_axis, minor_axis), angle).
-    - N: Number of random lines to select for intersection calculation.
-    - M: Maximum number of stored intersections before pruning.
+    #Parameters:
+    #- frame: The OpenCV frame to draw on.
+    #- ray_lines: List of ellipse tuples ((cx, cy), (major_axis, minor_axis), angle).
+    #- N: Number of random lines to select for intersection calculation.
+    #- M: Maximum number of stored intersections before pruning.
 
-    Returns:
-    - (avg_x, avg_y): Average intersection point of selected lines.
-    """
+    #Returns:
+    #- (avg_x, avg_y): Average intersection point of selected lines.
     global stored_intersections
 
     if len(ray_lines) < 2 or N < 2:
@@ -679,15 +673,13 @@ def rotation_from_a_to_b(a, b):
 
 
 def find_line_intersection(ellipse1, ellipse2):
-    """
-    Computes the intersection of two lines that are orthogonal to the surface of given ellipses.
+    #Computes the intersection of two lines that are orthogonal to the surface of given ellipses.
     
-    Parameters:
-    - ellipse1, ellipse2: Ellipse tuples ((cx, cy), (major_axis, minor_axis), angle).
+    #Parameters:
+    #- ellipse1, ellipse2: Ellipse tuples ((cx, cy), (major_axis, minor_axis), angle).
     
-    Returns:
-    - (x, y): Intersection point of the two lines, or None if parallel.
-    """
+    #Returns:
+    #- (x, y): Intersection point of the two lines, or None if parallel.
 
     (cx1, cy1), (_, minor_axis1), angle1 = ellipse1
     (cx2, cy2), (_, minor_axis2), angle2 = ellipse2
@@ -718,11 +710,10 @@ def find_line_intersection(ellipse1, ellipse2):
     return (int(intersection_x), int(intersection_y))
 
 def compute_gaze_vector(x, y, center_x, center_y, screen_width=1920, screen_height=1080):
-    """Compute 3D gaze direction from pupil and sphere center screen coordinates.
-    Returns:
-        sphere_center (np.ndarray): 3D position of the sphere center in world space
-        gaze_direction (np.ndarray): Normalized 3D direction vector from sphere center
-    """
+    #Compute 3D gaze direction from pupil and sphere center screen coordinates.
+    #Returns:
+    #    sphere_center (np.ndarray): 3D position of the sphere center in world space
+    #    gaze_direction (np.ndarray): Normalized 3D direction vector from sphere center
 
     # Get viewport dimensions
     viewport_width = screen_width
@@ -886,11 +877,9 @@ def compute_gaze_vector(x, y, center_x, center_y, screen_width=1920, screen_heig
     return sphere_center_out, gaze_rotated
 
 def on_mouse_frame_with_rays(event, x, y, flags, param):
-    """
-    Left-click on 'Frame with Ellipse and Rays' to manually set the eye sphere center.
-    This behaves like pressing 'c': it locks the 2D center and fixes the 3D origin
-    using the latest computed sphere center.
-    """
+    #Left-click on 'Frame with Ellipse and Rays' to manually set the eye sphere center.
+    #This behaves like pressing 'c': it locks the 2D center and fixes the 3D origin
+    #using the latest computed sphere center.
     global sphere_center_locked_2d, locked_model_center_avg, prev_model_center_avg
     global calibrated_sphere_center, calibrated, last_sphere_center
 
@@ -922,17 +911,15 @@ def calibrate_step(frame):
 
     # Abandon du code du type sur Github pour remplacer par homographie avec seulement l'estimation de la pupille en 2D
     # Je deviens fou ? Je pleure en direct ?
-    """
-    # print("JE SUIS ICI HAHAHAHAHHAAHAHAHAAH"*10) # debug
-    gz = last_gaze_dir[2]
-    if abs(gz) < 1e-6: return
+    ## print("JE SUIS ICI HAHAHAHAHHAAHAHAHAAH"*10) # debug
+    #gz = last_gaze_dir[2]
+    #if abs(gz) < 1e-6: return
     
-    # Projection 2D du regard => stockée dans le vecteur qui sert à faire homographie quand étape 4
-    gaze_proj = (last_gaze_dir[0]/gz, last_gaze_dir[1]/gz)
-    current_step_gaze_buffer.append(gaze_proj)
-    current_step_cam_buffer.append(cam_corners[calibration_step])
-    collecting_frames_count += 1
-    """
+    ## Projection 2D du regard => stockée dans le vecteur qui sert à faire homographie quand étape 4
+    #gaze_proj = (last_gaze_dir[0]/gz, last_gaze_dir[1]/gz)
+    #current_step_gaze_buffer.append(gaze_proj)
+    #current_step_cam_buffer.append(cam_corners[calibration_step])
+    #collecting_frames_count += 1
     
     pupil_2D = (float(prev_darkest_point[0]), float(prev_darkest_point[1]))
     
@@ -1184,12 +1171,10 @@ def process_camera(eye_cam, front_cam):
                     #cv2.polylines(ext_frame_resized, [aruco_markers_centers.astype(np.int32)], True, (0, 255, 0), 2)
                     
                     # J'abandonne la 3D pour tester avec juste la pupille 
-                    """
-                    # D'abord homographie entre regard et caméra frontale
-                    gz = last_gaze_dir[2]
-                    gaze_proj_point = np.array([[[last_gaze_dir[0]/gz, last_gaze_dir[1]/gz]]], dtype=np.float32)
-                    point_in_cam = cv2.perspectiveTransform(gaze_proj_point, Hom_gaze_to_cam)[0][0]
-                    """
+                    ## D'abord homographie entre regard et caméra frontale
+                    #gz = last_gaze_dir[2]
+                    #gaze_proj_point = np.array([[[last_gaze_dir[0]/gz, last_gaze_dir[1]/gz]]], dtype=np.float32)
+                    #point_in_cam = cv2.perspectiveTransform(gaze_proj_point, Hom_gaze_to_cam)[0][0]
                     
                     pupil_point = np.array([[[float(prev_darkest_point[0]), float(prev_darkest_point[1])]]], dtype=np.float32)
                     point_in_cam = cv2.perspectiveTransform(pupil_point, Hom_gaze_to_cam)[0][0]
@@ -1220,51 +1205,47 @@ def process_camera(eye_cam, front_cam):
                     cv2.circle(screen, (circle_x, circle_y), 10, (0, 0, 255), -1)
                         
                     
-                    """
                     # Si c'est calibré, on calcule l'homographie dynamique de l'écran
-                    if calibrated:
-                        M_homography_screen, _ = cv2.findHomography(np.array(calib_gaze_pts, dtype=np.float32), aruco_markers_centers)
-                        
-                        # Trouver position regard
-                        gz = last_gaze_dir[2]
-                        vec = np.array([[[last_gaze_dir[0]/gz, last_gaze_dir[1]/gz]]], dtype=np.float32)
-                        
-                        gaze_target = cv2.perspectiveTransform(vec, M_homography_screen)
-                        u = gaze_target[0][0][0]
-                        v = gaze_target[0][0][1]
-                        
-                        alpha = 0.15
-                        
-                        smoothed_u = alpha * u + (1 - alpha) * smoothed_u
-                        smoothed_v = alpha * v + (1 - alpha) * smoothed_v
-                        
-                        circle_x = int(np.clip(smoothed_u, 0, EXT_WIDTH - 1))
-                        circle_y = int(np.clip(smoothed_v, 0, EXT_HEIGHT - 1))
-                        
-                        #update_gaze_circle_from_current_gaze()
+                    #if calibrated:
+                    #    M_homography_screen, _ = cv2.findHomography(np.array(calib_gaze_pts, dtype=np.float32), aruco_markers_centers)
+                    #    
+                    #    # Trouver position regard
+                    #    gz = last_gaze_dir[2]
+                    #    vec = np.array([[[last_gaze_dir[0]/gz, last_gaze_dir[1]/gz]]], dtype=np.float32)
+                    #    
+                    #    gaze_target = cv2.perspectiveTransform(vec, M_homography_screen)
+                    #    u = gaze_target[0][0][0]
+                    #    v = gaze_target[0][0][1]
+                    #    
+                    #    alpha = 0.15
+                    #    
+                    #    smoothed_u = alpha * u + (1 - alpha) * smoothed_u
+                    #    smoothed_v = alpha * v + (1 - alpha) * smoothed_v
+                    #    
+                    #    circle_x = int(np.clip(smoothed_u, 0, EXT_WIDTH - 1))
+                    #    circle_y = int(np.clip(smoothed_v, 0, EXT_HEIGHT - 1))
+                    #    
+                    #    #update_gaze_circle_from_current_gaze()
 
-                        # Draw small red circle representing gaze on external view
-                    """                    
+                    #    # Draw small red circle representing gaze on external view
                         
                 else:
                     cv2.putText(screen, "Marqueurs ArUco non detectes", (EXT_CX//2, EXT_CY//2), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 
-                """
-                if not calibrated:
-                    # On récupère la cible actuelle
-                    target_pos = calib_points_screen[calibration_step]
-                    
-                    # Cercle vide pour la cible (extérieur) 
-                    cv2.circle(ext_frame_resized, target_pos, 10, (0, 255, 0), 2)
-                    # Cible = là où il faut regarder à chaque étape
-                    cv2.circle(ext_frame_resized, target_pos, 5, (0, 255, 0), -1)
-                    
-                    # Petit texte indicatif
-                    cv2.putText(ext_frame_resized, f"Regardez ici et appuyez sur 'C' ({calibration_step+1}/4)", 
-                            (target_pos[0]-50, target_pos[1]-30), 
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-                """
+                #if not calibrated:
+                #    # On récupère la cible actuelle
+                #    target_pos = calib_points_screen[calibration_step]
+                #    
+                #    # Cercle vide pour la cible (extérieur) 
+                #    cv2.circle(ext_frame_resized, target_pos, 10, (0, 255, 0), 2)
+                #    # Cible = là où il faut regarder à chaque étape
+                #    cv2.circle(ext_frame_resized, target_pos, 5, (0, 255, 0), -1)
+                #    
+                #    # Petit texte indicatif
+                #    cv2.putText(ext_frame_resized, f"Regardez ici et appuyez sur 'C' ({calibration_step+1}/4)", 
+                #            (target_pos[0]-50, target_pos[1]-30), 
+                #            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                 
                 cv2.imshow("External Camera (Gaze)", ext_frame_resized)
                 
