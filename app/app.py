@@ -103,6 +103,9 @@ class MainWindow(QMainWindow):
         self.stack.widget(0).eyeEvent(self.mapFromGlobal(mouse.pos()))
         self.eye.update()
 
+    def setPoint(self, i):
+        self.markers.setPoint(i)
+
 class Container(QWidget):
     def switch(self, page):
         self.parent().switch(page)

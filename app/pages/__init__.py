@@ -1,4 +1,5 @@
 from .page import * 
+from .calibration import *
 from .menu import *
 from .contact import *
 from .contacts import * 

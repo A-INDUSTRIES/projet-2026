@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QLabel, QStyleOption, QStyle
 from PySide6.QtGui import QPainter
 from ..widgets import Widget, PushButton, HBoxLayout, VBoxLayout
 from ..modules.settings import SettingsManager
-from . import Page
+from . import Page, Calibration
 
 class Settings(Page):
     def __init__(self, *args):
@@ -21,6 +21,7 @@ class Settings(Page):
 
         # Connection des events
         self.homeButton.clicked.connect(lambda _event: self.switch("menu"))
+        self.calibrate.clicked.connect(self.openCalibrate)
 
         self.layout().addWidget(self.fontSize)
         self.layout().addWidget(self.animationSpeed)
@@ -40,6 +41,10 @@ class Settings(Page):
         self.inputSpeed.updateInputSpeed()
         self.homeButton.updateInputSpeed()
         self.calibrate.updateInputSpeed()
+
+    def openCalibrate(self):
+        page = Calibration()
+        self.switch(page)
 
 class Setting(Widget):
     def __init__(self, name, description, options, values):

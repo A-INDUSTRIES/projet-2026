@@ -12,6 +12,7 @@ class MarkersWidget(QLabel):
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.marker_size = 100
         self.aruco_dict = getPredefinedDictionary(DICT_4X4_50)
+        self.point = -1
 
     def createCanva(self):
         self.canvas = np.zeros((self.height(), self.width(), 4), dtype=np.uint8) * 255
@@ -28,13 +29,18 @@ class MarkersWidget(QLabel):
             
             padding = cv2.copyMakeBorder(marker, 15, 15, 15, 15, cv2.BORDER_CONSTANT, value=255)
             background_with_padding = cv2.cvtColor(padding, cv2.COLOR_GRAY2BGR)
-            background_with_padding.fill
-            
+ 
+            if marker_id == self.point:
+                cv2.circle(background_with_padding, (self.marker_size//2, self.marker_size//2), 10, (255, 0, 0), -1)           
+
             self.canvas[row:row+self.marker_size, col:col+self.marker_size, :3] = background_with_padding
             self.canvas[row:row+self.marker_size, col:col+self.marker_size, 3] = 255
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
+        self.updateImage()
+
+    def updateImage(self):
         self.createCanva()
 
         bytesPerLine = 4 * self.width()
@@ -49,3 +55,7 @@ class MarkersWidget(QLabel):
         pixmap = QPixmap(image)
 
         self.setPixmap(pixmap)
+
+    def setPoint(self, i):
+        self.point = i
+        self.updateImage()
