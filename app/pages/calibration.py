@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QLabel
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from ..widgets import VBoxLayout, PushButton
+from ..modules.eye_tracking.test_class import EyeTracking
 from . import Page
 
 from time import sleep
@@ -22,13 +23,31 @@ class Calibration(Page):
         self.vlayout.addWidget(self.begin)
         self.vlayout.addWidget(self.homeButton)
 
+        self.current = 0
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.nextPoint)
+        self.timer.setInterval(5000)
+
     def startCalibration(self):
-        positions = ["haut à gauche", "haut à droite", "bas à droite", "bas à gauche"]
         self.begin.setText("Calibration en cours")
+        self.timer.start()
+    
+    def nextPoint(self):
+        if self.current == 4:
+            self.stopCalibration()
+            return
+        
+        positions = ["haut à gauche", "haut à droite", "bas à droite", "bas à gauche"]
+        self.instruction.setText(f"Regardez le point rouge en {positions[self.current]}")
+        self.window().setPoint(self.current)
+        
+        QTimer.singleShot(2000, lambda current=self.current: EyeTracking().calibratePoint(current))
+        self.current += 1
 
-        for i in range(4):
-            self.instruction.setText(f"Regardez le point rouge en {positions[i]}")
-            self.window().setPoint(i)
-            # Faire les appels vers le module eye_tracking
-
-        self.begin.setText("Calibration finie")
+    def stopCalibration(self):
+        self.timer.stop()
+        self.current = 0
+        self.begin.setText("Calibration terminée")
+        self.instruction.setText("")
+        self.window().setPoint(-1)

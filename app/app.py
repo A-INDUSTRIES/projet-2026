@@ -1,10 +1,12 @@
 from PySide6.QtGui import Qt, QShortcut, QKeySequence, QCursor, QPainter, QBrush, QPen
 from PySide6.QtWidgets import QMainWindow, QStackedLayout, QWidget
+from PySide6.QtCore import QPoint
 from app.pages import *
 from app.modules.tts import VoiceEngine
 from app.modules.gaze import GazeTyping
 from app.modules.logger import *
 from app.modules.settings import SettingsManager
+from app.modules.eye_tracking.test_class import EyeTracking
 from app.widgets import MarkersWidget
 
 class MainWindow(QMainWindow):
@@ -40,15 +42,15 @@ class MainWindow(QMainWindow):
 
         self.updateStyle()
 
-        self.setMouseTracking(True)
+        # self.setMouseTracking(True)
 
         # On montre la fenêtre quand elle est prête
         self.show()
 
-        self.timer = QTimer()
-        self.timer.setInterval(int(1/60))
-        self.timer.timeout.connect(self.eyeEvent)
-        self.timer.start()
+        # self.timer = QTimer()
+        # self.timer.setInterval(int(1/60))
+        # self.timer.timeout.connect(self.eyeEvent)
+        # self.timer.start()
 
     def switch(self, page: str | Page | None=None):
         current = self.stack.widget(0)
@@ -83,10 +85,14 @@ class MainWindow(QMainWindow):
     def showEvent(self, event):
         VoiceEngine()
         GazeTyping()
+        eyeTracking = EyeTracking(screen_width=self.width(), screen_height=self.height())
+        eyeTracking.connect(self.eyeEvent)
+        eyeTracking.run()
         return super().showEvent(event)
 
     def closeEvent(self, event):
         VoiceEngine().stop()
+        EyeTracking().stop()
         return super().closeEvent(event)
     
     def updateStyle(self):
@@ -98,10 +104,10 @@ class MainWindow(QMainWindow):
         stylesheet = stylesheet.replace("var(extra-large)", f"{fontSize+20}px")
         self.setStyleSheet(stylesheet)
 
-    def eyeEvent(self):
-        mouse = QCursor()
-        self.stack.widget(0).eyeEvent(self.mapFromGlobal(mouse.pos()))
-        self.eye.update()
+    def eyeEvent(self, position):
+        pos = QPoint(*position)
+        self.stack.widget(0).eyeEvent(pos)
+        self.eye.setPos(pos)
 
     def setPoint(self, i):
         self.markers.setPoint(i)
@@ -117,6 +123,14 @@ class Container(QWidget):
         self.parent().updateStyle()
 
 class Eye(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.pos = QPoint(-100, -100)
+        
+    def setPos(self, pos):
+        self.pos = pos
+        self.update()
+
     def paintEvent(self, event):
         painter = QPainter(self)
 
@@ -128,7 +142,5 @@ class Eye(QWidget):
         painter.setPen(pen)
         painter.setOpacity(0.2)
 
-        center = self.mapFromGlobal(QCursor().pos())
-
-        painter.drawEllipse(center, 20, 20)
+        painter.drawEllipse(self.pos, 20, 20)
         return super().paintEvent(event)
