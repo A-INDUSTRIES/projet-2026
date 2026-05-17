@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import QSizePolicy, QWidget
-from PySide6.QtCore import QSize, Signal
+from PySide6.QtCore import QSize, Signal, Qt
 from PySide6.QtGui import QIcon
 from ..modules.logger import *
-from . import Button, EyeWidget, GridLayout, PushButton
+from . import Button, EyeWidget, GridLayout, PushButton, Widget, GazeWidget
 
 
 class KeyboardWidget(QWidget, EyeWidget):    
@@ -40,6 +40,10 @@ class KeyboardWidget(QWidget, EyeWidget):
         self.specialLines = self.firstSpecial + self.secondSpecial + self.thirdSpecial + self.fourthSpecial
         
         self.keyboardButtons = [] # Pour garder chaque bouton accessible pour la modification (shift, capslock...)
+
+        self.gazeWidget = GazeWidget()
+        self.gazeWidget.words.connect(self.handleGaze)
+        self.layout().addWidget(self.gazeWidget, 1, 2, 3, 20)
         
         for n in range(len(self.lines)):
             self.lowerLetter = Button(self.lines[n], self.specialLines[n])
@@ -114,11 +118,27 @@ class KeyboardWidget(QWidget, EyeWidget):
         self.updateSpecialCharactersDisplay()
         
         # Bouton Gaze Typing ON / OFF
-        self.gazeTyping = PushButton(" Gaze\nTyping\nOFF")
+        self.gazeTyping = PushButton(" Gaze\nTyping\nON")
         self.gazeTyping.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.gazeTyping.clicked.connect(lambda _event: self.handleGazeTyping())
+        self.gazeTyping.clicked.connect(self.toggleGazeTyping)
         self.layout().addWidget(self.gazeTyping, 0, 0, 2, 2)
-               
+
+        self.gazeWidget.raise_()
+        
+    def debug_pos(self):
+        poses = {}
+        for i in range(self.layout().count()):
+            object = self.layout().itemAt(i).widget()
+            if isinstance(object, PushButton):
+                pos = self.gazeWidget.mapFromGlobal(object.mapToGlobal(object.rect().center()))
+                poses[object.text()] = {
+                    "x": pos.x()/self.gazeWidget.width(),
+                    "y": pos.y()/self.gazeWidget.height()
+                }
+
+        with open("coords.json", 'w') as f:
+            import json
+            json.dump(poses, f, indent=4)
     
     def handleCapsLock(self):
         self.cpsLock = not self.cpsLock
@@ -149,11 +169,18 @@ class KeyboardWidget(QWidget, EyeWidget):
     def updateCharactersCase(self):
         for key in self.keyboardButtons:
             key.toggleShift()
-        
-        
-    def handleGazeTyping(self):
-        warn("Not yet implemented duh")
-        
+
+    def handleGaze(self, words):
+        if len(words) == 0:
+            return
+        print(words[:10])
+        self.textUpdated.emit(words[0][0] + " ")
+
+    def toggleGazeTyping(self):
+        if self.gazeWidget.toggle():
+            self.gazeTyping.setText("Gaze\nTyping\nON")
+        else:
+            self.gazeTyping.setText("Gaze\nTyping\nOFF")
         
     def toggleSpecialCharacters(self):
         self.specialCharactersToggled = not self.specialCharactersToggled

@@ -32,9 +32,13 @@ def layoutEyeEvent(self: QLayout, position):
         if (widget:=object.widget()) and isinstance(widget, EyeWidget):
             rect = widget.rect().translated(widget.mapTo(self.parentWidget().window(), QPoint(0, 0)))
             if rect.contains(position):
-                return widget.eyeEvent(position)
+                ret = widget.eyeEvent(position)
+                if not ret == EyeAction.NONE:
+                    return ret
         elif (layout:=object.layout()) and isinstance(layout, EyeWidget):
             rect = layout.geometry()
             if rect.contains(position):
-                return layout.eyeEvent(position)
+                ret = layout.eyeEvent(position)
+                if not ret == EyeAction.NONE:
+                    return ret
     return EyeAction.NONE

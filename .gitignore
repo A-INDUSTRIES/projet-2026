@@ -17,3 +17,7 @@ credentials.json
 
 # Assests python file
 **/assets_rc.py
+
+# Word Paths
+**/word_paths_raw.json
+**/word_curves.json
