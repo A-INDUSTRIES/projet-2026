@@ -16,12 +16,12 @@ class EyeTracking(metaclass=Singleton):
         self.EXT_CX = self.EXT_WIDTH // 2
         self.EXT_CY = self.EXT_HEIGHT // 2
 
-        self.marker_size = 100 # Taille en pixels, donc pas trop grands ig
+        self.marker_size = 150 # Taille en pixels, donc pas trop grands ig
         self.aruco_static_corners = np.array([
-            (50, 50),
-            (self.EXT_WIDTH - 50, 50),
-            (self.EXT_WIDTH - 50, self.EXT_HEIGHT - 50),
-            (50, self.EXT_HEIGHT - 50)
+            (self.marker_size//2, self.marker_size//2),
+            (self.EXT_WIDTH - self.marker_size//2, self.marker_size//2),
+            (self.EXT_WIDTH - self.marker_size//2, self.EXT_HEIGHT - self.marker_size//2),
+            (self.marker_size//2, self.EXT_HEIGHT - self.marker_size//2)
         ], dtype=np.float32)
         self.Hom_gaze_to_cam = None
 
@@ -79,6 +79,10 @@ class EyeTracking(metaclass=Singleton):
         if ids is not None: #q and len(ids) >= 4:
             found_ids = ids.flatten()
             points = {}
+            
+            if len(found_ids) > 0 and len(found_ids) < 4:
+                debug(f"Seulement {len(found_ids)} marqueur(s) vu(s) : {found_ids}")
+
             for i, marker_id in enumerate(found_ids):
                 # Moyenne des coordonnées des 4 sommets pour avoir le centre de chaque marqueurs
                 # Sinon on pourrait prendre le coin supérieur gauche pour celui en haut à gauche etc
@@ -89,6 +93,10 @@ class EyeTracking(metaclass=Singleton):
                 
             if all(i in points for i in [0, 1, 2, 3]):
                 return np.array([points[0], points[1], points[2], points[3]])
+            else:
+                warn(f"4 marqueurs non detectes (IDs trouves : {found_ids}).")
+                
+        return None
 
     def calibrate_step(self, frame):
         cam_corners = self.get_aruco_markers_centers(frame)
@@ -195,6 +203,9 @@ class EyeTracking(metaclass=Singleton):
             ext_frame_resized = cv2.resize(ext_frame, (self.EXT_WIDTH, self.EXT_HEIGHT))
             current_cam_corners = self.get_aruco_markers_centers(ext_frame_resized)
             
+            # --- LIGNE DE DEBUG À DÉCOMMENTER POUR VOIR CE QUE LA CAMÉRA VOIT ---
+            # cv2.imshow("Debug Camera Externe", ext_frame_resized)
+            
             if self.is_collecting and self.calibration_step < 4 and not self.calibration_step == -1:
                 self.calibrate_step(ext_frame_resized)
             
@@ -229,7 +240,8 @@ class EyeTracking(metaclass=Singleton):
                 for listener in self.listeners:
                     listener((self.circle_x, self.circle_y))
             else:
-                warn("Marqueurs ArUco non detectes")
+                pass
+                # warn("Marqueurs ArUco non detectes")
 
             # # ----- Key controls -----
             # key = cv2.waitKey(1) & 0xFF

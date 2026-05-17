@@ -10,13 +10,18 @@ class MarkersWidget(QLabel):
         super().__init__(*args, **kwargs)
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents) 
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.marker_size = 100
+        self.marker_size = 150
         self.aruco_dict = getPredefinedDictionary(DICT_4X4_50)
         self.point = -1
 
     def createCanva(self):
         self.canvas = np.zeros((self.height(), self.width(), 4), dtype=np.uint8) * 255
         
+        if self.height() < self.marker_size:
+            return
+        if self.width() < self.marker_size:
+            return
+
         positions = [
             (0, 0),
             (0, self.width() - self.marker_size),

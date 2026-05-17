@@ -7,7 +7,7 @@ class Page(Widget):
         super().__init__(*args, **kwargs)
 
     def showEvent(self, event):
-        self.layout().setContentsMargins(100, 100, 100, 100)
+        self.layout().setContentsMargins(150, 150, 150, 150)
         return super().showEvent(event)
 
     def paintEvent(self, _):

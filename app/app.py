@@ -1,6 +1,6 @@
 from PySide6.QtGui import Qt, QShortcut, QKeySequence, QCursor, QPainter, QBrush, QPen
 from PySide6.QtWidgets import QMainWindow, QStackedLayout, QWidget
-from PySide6.QtCore import QPoint
+from PySide6.QtCore import QPoint, Signal
 from app.pages import *
 from app.modules.tts import VoiceEngine
 from app.modules.gaze import GazeTyping
@@ -10,6 +10,8 @@ from app.modules.eye_tracking.test_class import EyeTracking
 from app.widgets import MarkersWidget
 
 class MainWindow(QMainWindow):
+    eyePositionChanged = Signal(tuple)
+
     def __init__(self):
         super().__init__()
         self.static_pages = {
@@ -22,6 +24,8 @@ class MainWindow(QMainWindow):
 
         self.refreshShortcut = QShortcut(QKeySequence('r'), self)
         self.refreshShortcut.activated.connect(self.updateStyle)
+
+        self.eyePositionChanged.connect(self.eyeEvent)
 
         self.container = Container()
         self.stack = QStackedLayout(self.container)
@@ -85,8 +89,9 @@ class MainWindow(QMainWindow):
     def showEvent(self, event):
         VoiceEngine()
         GazeTyping()
-        eyeTracking = EyeTracking(screen_width=self.width(), screen_height=self.height())
-        eyeTracking.connect(self.eyeEvent)
+        screen_size = self.screen().size()
+        eyeTracking = EyeTracking(screen_width=screen_size.width(), screen_height=screen_size.height())
+        eyeTracking.connect(self.eyePositionChanged.emit)
         eyeTracking.run()
         return super().showEvent(event)
 
