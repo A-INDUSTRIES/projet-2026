@@ -92,12 +92,12 @@ class MainWindow(QMainWindow):
         eyeTracking.connect(self.eyePositionChanged.emit)
         eyeTracking.run()
 
-        if not eyeTracking.camerasDetected():
-            self.setMouseTracking(True)
-            self.timer = QTimer()
-            self.timer.setInterval(int(1/60))
-            self.timer.timeout.connect(self.eyeEvent)
-            self.timer.start()
+        # if not eyeTracking.camerasDetected():
+        #     self.setMouseTracking(True)
+        #     self.timer = QTimer()
+        #     self.timer.setInterval(int(1/60))
+        #     self.timer.timeout.connect(self.eyeEvent)
+        #     self.timer.start()
         return super().showEvent(event)
 
     def closeEvent(self, event):

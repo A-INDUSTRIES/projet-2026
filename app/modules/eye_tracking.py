@@ -170,12 +170,16 @@ class EyeTracking(metaclass=Singleton):
         if not eye_cap.isOpened():
             error(f"Could not open eye camera at index {eye_cam}.")
             return
+        eye_cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
 
         # ---- External camera (new) ----
         external_cap = cv2.VideoCapture(front_cam)
         if not external_cap.isOpened():
             error(f"Could not open external camera at index {front_cam}.")
+            return
         
+        external_cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
+
         external_cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.EXT_WIDTH)
         external_cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.EXT_HEIGHT)
         debug(f"External camera opened at index {front_cam} ({self.EXT_WIDTH}x{self.EXT_HEIGHT}).")
@@ -185,6 +189,12 @@ class EyeTracking(metaclass=Singleton):
         self.calibrated = False
 
         while self.running:
+            # ----- External camera frame -----
+            ret_ext, ext_frame = external_cap.read()
+            if not ret_ext:
+                error("Failed to read frame from front camera.")
+                break
+
             # ----- Eye camera frame -----
             ret_eye, eye_frame = eye_cap.read()
             if not ret_eye:
@@ -194,12 +204,6 @@ class EyeTracking(metaclass=Singleton):
             # Flip + process for ellipse / gaze vector
             #eye_frame_flipped = cv2.flip(eye_frame, 0)
             self.process_frame(eye_frame)  # this updates last_gaze_dir via compute_gaze_vector
-
-            # ----- External camera frame -----
-            ret_ext, ext_frame = external_cap.read()
-            if not ret_ext:
-                error("Failed to read frame from front camera.")
-                break
             
             ext_frame_resized = cv2.resize(ext_frame, (self.EXT_WIDTH, self.EXT_HEIGHT))
             current_cam_corners = self.get_aruco_markers_centers(ext_frame_resized)
@@ -278,6 +282,7 @@ class EyeTracking(metaclass=Singleton):
         front = None
 
         for camera_info in enumerate_cameras():
+            print(camera_info)
             if 0xc45 == camera_info.vid:
                 eye = camera_info.index
             if 0x58f == camera_info.vid:
