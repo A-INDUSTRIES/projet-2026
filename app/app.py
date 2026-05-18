@@ -1,6 +1,6 @@
 from PySide6.QtGui import Qt, QShortcut, QKeySequence, QCursor, QPainter, QBrush, QPen
 from PySide6.QtWidgets import QMainWindow, QStackedLayout, QWidget
-from PySide6.QtCore import QPoint, Signal
+from PySide6.QtCore import QPoint, Signal, Qt
 from app.pages import *
 from app.modules.tts import VoiceEngine
 from app.modules.gaze import GazeTyping
@@ -112,6 +112,7 @@ class MainWindow(QMainWindow):
     def eyeEvent(self, position=None):
         if not EyeTracking().camerasDetected() and position == (-1, -1):
             self.setMouseTracking(True)
+            self.setCursor(Qt.CursorShape.BlankCursor)
             self.timer = QTimer()
             self.timer.setInterval(int(1/60))
             self.timer.timeout.connect(self.eyeEvent)
