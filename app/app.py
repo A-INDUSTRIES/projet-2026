@@ -92,12 +92,7 @@ class MainWindow(QMainWindow):
         eyeTracking.connect(self.eyePositionChanged.emit)
         eyeTracking.run()
 
-        # if not eyeTracking.camerasDetected():
-        #     self.setMouseTracking(True)
-        #     self.timer = QTimer()
-        #     self.timer.setInterval(int(1/60))
-        #     self.timer.timeout.connect(self.eyeEvent)
-        #     self.timer.start()
+        
         return super().showEvent(event)
 
     def closeEvent(self, event):
@@ -115,6 +110,13 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(stylesheet)
 
     def eyeEvent(self, position=None):
+        if not EyeTracking().camerasDetected() and position == (-1, -1):
+            self.setMouseTracking(True)
+            self.timer = QTimer()
+            self.timer.setInterval(int(1/60))
+            self.timer.timeout.connect(self.eyeEvent)
+            self.timer.start()
+
         if position is None:
             pos = self.mapFromGlobal(QCursor().pos())
         else:

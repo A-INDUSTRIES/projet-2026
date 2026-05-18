@@ -290,9 +290,13 @@ class EyeTracking(metaclass=Singleton):
 
         if not eye:
             error("Eye camera not found")
+            for listener in self.listeners:
+                    listener((-1, -1))
             return
         if not front:
             error("Front camera not found")
+            for listener in self.listeners:
+                    listener((-1, -1))
             return
         
         self.cameras_detected = True
