@@ -9,6 +9,7 @@ from ..logger import error, debug, warn
 class EyeTracking(metaclass=Singleton):
     def __init__(self, screen_width=1920, screen_height=1080):
         self.listeners = []
+        self.cameras_detected = False
 
         # External camera / screen params (for 640x480)
         self.EXT_WIDTH = screen_width
@@ -288,6 +289,8 @@ class EyeTracking(metaclass=Singleton):
         if not front:
             error("Front camera not found")
             return
+        
+        self.cameras_detected = True
                 
         self.process_camera(eye, front)
 
@@ -315,6 +318,9 @@ class EyeTracking(metaclass=Singleton):
         self.running = True
         self.thread = Thread(target=self._run)
         self.thread.start()
+    
+    def camerasDetected(self):
+        return self.cameras_detected
 
 if __name__ == "__main__":
     tracker = EyeTracking()

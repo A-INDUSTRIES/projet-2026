@@ -14,6 +14,8 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.useMouseAsEye = False
+
         self.static_pages = {
             "keyboard": Keyboard()
         }
@@ -46,15 +48,11 @@ class MainWindow(QMainWindow):
 
         self.updateStyle()
 
-        # self.setMouseTracking(True)
 
         # On montre la fenêtre quand elle est prête
         self.show()
 
-        # self.timer = QTimer()
-        # self.timer.setInterval(int(1/60))
-        # self.timer.timeout.connect(self.eyeEvent)
-        # self.timer.start()
+        # 
 
     def switch(self, page: str | Page | None=None):
         current = self.stack.widget(0)
@@ -93,6 +91,13 @@ class MainWindow(QMainWindow):
         eyeTracking = EyeTracking(screen_width=screen_size.width(), screen_height=screen_size.height())
         eyeTracking.connect(self.eyePositionChanged.emit)
         eyeTracking.run()
+
+        if not eyeTracking.camerasDetected():
+            self.setMouseTracking(True)
+            self.timer = QTimer()
+            self.timer.setInterval(int(1/60))
+            self.timer.timeout.connect(self.eyeEvent)
+            self.timer.start()
         return super().showEvent(event)
 
     def closeEvent(self, event):
@@ -109,8 +114,11 @@ class MainWindow(QMainWindow):
         stylesheet = stylesheet.replace("var(extra-large)", f"{fontSize+20}px")
         self.setStyleSheet(stylesheet)
 
-    def eyeEvent(self, position):
-        pos = QPoint(*position)
+    def eyeEvent(self, position=None):
+        if position is None:
+            pos = self.mapFromGlobal(QCursor().pos())
+        else:
+            pos = QPoint(*position)
         self.stack.widget(0).eyeEvent(pos)
         self.eye.setPos(pos)
 
