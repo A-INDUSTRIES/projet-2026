@@ -10,7 +10,7 @@ class GazeWidget(Widget):
 
     def __init__(self):
         super().__init__()
-        self.toggled = False
+        self.toggled = True
         self.anchorPoint = None
         self.inputs = False
 
@@ -18,6 +18,8 @@ class GazeWidget(Widget):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.toggleInput)
+
+        self.toggle()
 
     @override
     def eyeEvent(self, position):
@@ -54,7 +56,7 @@ class GazeWidget(Widget):
     
     def toggle(self):
         self.toggled = not self.toggled
-        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, on=self.toggled) 
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, on=not self.toggled) 
         return self.toggled
     
     def paintEvent(self, event):
