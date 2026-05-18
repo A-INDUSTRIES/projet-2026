@@ -1,1 +1,3 @@
-# Projet 2026 - Communiquer avec les yeux
+# Projet 2026 - EyeContact
+
+Communiquer avec les yeux

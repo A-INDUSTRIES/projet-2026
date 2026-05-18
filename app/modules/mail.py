@@ -11,7 +11,7 @@ import json
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
-SIGNATURE = "<font style=\"color:rgb(153,153,153)\"><br>Envoyé depuis CommuniquerAvecLesYeux.</font>"
+SIGNATURE = "<font style=\"color:rgb(153,153,153)\"><br>Envoyé depuis EyeContact.</font>"
 
 class MailManager(metaclass=Singleton):
     def __init__(self):

@@ -19,4 +19,4 @@ def getUserDataPath():
             path =  Path.home() / ".config"
         case _:
             raise NotImplementedError(f"{platform} is not yet supported.")
-    return path / "CommuniquerAvecLesYeux"
+    return path / "EyeContact"

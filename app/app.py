@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
         }
 
         # Définition des propiétés de la fenêtre
-        self.setWindowTitle("Communiquer avec les yeux")
+        self.setWindowTitle("EyeContact")
         self.setWindowState(Qt.WindowState.WindowFullScreen)
 
         self.refreshShortcut = QShortcut(QKeySequence('r'), self)
