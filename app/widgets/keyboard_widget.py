@@ -118,7 +118,7 @@ class KeyboardWidget(QWidget, EyeWidget):
         self.updateSpecialCharactersDisplay()
         
         # Bouton Gaze Typing ON / OFF
-        self.gazeTyping = PushButton(" Gaze\nTyping\nON")
+        self.gazeTyping = PushButton("Gaze\nTyping\nOFF")
         self.gazeTyping.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.gazeTyping.clicked.connect(self.toggleGazeTyping)
         self.layout().addWidget(self.gazeTyping, 0, 0, 2, 2)
