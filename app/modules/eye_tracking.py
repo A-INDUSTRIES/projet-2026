@@ -3,8 +3,8 @@ import cv2.aruco as aruco
 import numpy as np
 from cv2_enumerate_cameras import enumerate_cameras
 from threading import Thread
-from ..utils import Singleton
-from ..logger import error, debug, warn
+from .utils import Singleton
+from .logger import error, debug, warn
 
 class EyeTracking(metaclass=Singleton):
     def __init__(self, screen_width=1920, screen_height=1080):

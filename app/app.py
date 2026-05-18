@@ -6,7 +6,7 @@ from app.modules.tts import VoiceEngine
 from app.modules.gaze import GazeTyping
 from app.modules.logger import *
 from app.modules.settings import SettingsManager
-from app.modules.eye_tracking.test_class import EyeTracking
+from app.modules.eye_tracking import EyeTracking
 from app.widgets import MarkersWidget
 
 class MainWindow(QMainWindow):

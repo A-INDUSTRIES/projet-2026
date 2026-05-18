@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import Qt, QTimer
 from ..widgets import VBoxLayout, PushButton
-from ..modules.eye_tracking.test_class import EyeTracking
+from ..modules.eye_tracking import EyeTracking
 from . import Page
 
 from time import sleep
