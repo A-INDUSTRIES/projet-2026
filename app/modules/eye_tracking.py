@@ -208,9 +208,6 @@ class EyeTracking(metaclass=Singleton):
             ext_frame_resized = cv2.resize(ext_frame, (self.EXT_WIDTH, self.EXT_HEIGHT))
             current_cam_corners = self.get_aruco_markers_centers(ext_frame_resized)
             
-            # --- LIGNE DE DEBUG À DÉCOMMENTER POUR VOIR CE QUE LA CAMÉRA VOIT ---
-            # cv2.imshow("Debug Camera Externe", ext_frame_resized)
-            
             if self.is_collecting and self.calibration_step < 4 and not self.calibration_step == -1:
                 self.calibrate_step(ext_frame_resized)
             
@@ -244,33 +241,6 @@ class EyeTracking(metaclass=Singleton):
 
                 for listener in self.listeners:
                     listener((self.circle_x, self.circle_y))
-            else:
-                pass
-                # warn("Marqueurs ArUco non detectes")
-
-            # # ----- Key controls -----
-            # key = cv2.waitKey(1) & 0xFF
-            # if key == ord('q'):
-            #     break
-            # elif key == ord(' '):
-            #     # Pause until another key press
-            #     cv2.waitKey(0)
-            # elif key == ord('c') and self.calibration_step < 4:
-            #     # print("AIZUHDIUAHZDIUHAZODIUHAOZHDOAZIHUD") # debug (je pète un cable)
-            #     # Calibrate so current gaze ray hits the center of the external screen
-            #     if not self.is_collecting:
-            #         print(f"Démarrage calibration {self.calibration_step}")
-            #         self.is_collecting = True
-            #     #calibrate_gaze_to_external() (celle là est rendue inutile par l'homographie mais je la garde au cas où on sait jamais)
-            # elif key == ord('o'):
-            #     # Essayer de recalibrer le truc par rapport à un offset en regardant au centre de l'écran 
-            #     # A utiliser quand le point rouge se décale un peu trop de la réalité
-            #     self.offset_x = self.EXT_WIDTH // 2 - self.circle_x
-            #     self.offset_y = self.EXT_HEIGHT // 2 - self.circle_y
-            # elif key == ord('r'):
-            #     self.smoothed_u, self.smoothed_v = None, None # Au cas où ça foire en regardant or écran / valeur trop (pas devoir relancer l'app, jsp)
-            #     self.offset_x, self.offset_y = 0, 0 # comme ça on reset tout du'un coup
-
         # Cleanup
         eye_cap.release()
         if external_cap is not None:
@@ -290,11 +260,11 @@ class EyeTracking(metaclass=Singleton):
 
         if not eye:
             error("Eye camera not found")
-            for listener in self.listeners:
-                    listener((-1, -1))
-            return
+            
         if not front:
             error("Front camera not found")
+
+        if not eye or not front:
             for listener in self.listeners:
                     listener((-1, -1))
             return
